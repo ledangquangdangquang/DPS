@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-06-22 rewrite repository README
+
+- Replaced the original generic HUST thesis-template README with a project-specific Vietnamese README.
+- Documented the research objective, SoCE/DPS model, four MATLAB branches, verified configuration and metrics, repository structure, requirements, MATLAB/LaTeX commands, reproducibility workflow, limitations, and future work.
+- Added links to the research notes and defense-question document.
+- Kept runtime claims scoped to the current environment and explicitly stated that DPS-basis generation is excluded.
+
 ## 2026-06-22 add thesis-defense question bank
 
 - Read the current project progress/TODO, the five-chapter thesis content, equation mappings, assumptions, paper notes, and verified approximate metrics.
