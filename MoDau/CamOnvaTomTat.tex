@@ -1,0 +1,26 @@
+\thispagestyle{empty}
+
+\subsection*{\centering Lời cảm ơn}
+
+Em xin gửi lời cảm ơn chân thành tới TS. Nguyễn Hồng Anh đã định hướng, góp ý và hỗ trợ em trong quá trình thực hiện đồ án tốt nghiệp. Những trao đổi về mô hình kênh MIMO, phương pháp biểu diễn DPS và cách kiểm chứng bằng mô phỏng đã giúp em hoàn thiện hơn cả phần lý thuyết lẫn phần triển khai MATLAB.
+
+Em cũng xin cảm ơn các thầy cô Trường Điện -- Điện tử, Đại học Bách khoa Hà Nội đã trang bị cho em nền tảng kiến thức trong suốt quá trình học tập. Cuối cùng, em xin cảm ơn gia đình và bạn bè đã luôn động viên, tạo điều kiện để em hoàn thành đồ án này.
+
+\subsection*{\centering Tóm tắt nội dung đồ án}
+
+Đồ án nghiên cứu bài toán mô phỏng kênh MIMO băng rộng dựa trên mô hình kênh hình học. Trong mô hình này, kênh được biểu diễn dưới dạng tổng các hàm mũ phức (SoCE) của nhiều thành phần đa đường. Cách biểu diễn SoCE có ý nghĩa vật lý rõ ràng, nhưng chi phí tính toán tăng theo số mẫu thời gian, số điểm tần số, số anten và số MPC.
+
+Để giảm độ phức tạp, đồ án khai thác đặc điểm kênh bị giới hạn băng theo các chiều Doppler, trễ, góc phát và góc thu. Trên cơ sở đó, chuỗi prolate spheroidal rời rạc (DPS) được sử dụng để biểu diễn khối kênh trong một không gian con có số chiều nhỏ hơn. Phần mô phỏng được triển khai bằng MATLAB với bốn nhánh: SoCE tham chiếu, DPS chính xác, DPS xấp xỉ 4D và phương pháp hybrid kết hợp DPS theo thời gian--tần số với hàm mũ không gian trực tiếp.
+
+Trong cấu hình mô phỏng hiện tại, phương pháp hybrid đạt NMSE \(4{,}29\times10^{-7}\) so với SoCE tham chiếu, trong khi DPS chính xác đạt NMSE \(8{,}53\times10^{-9}\). Các kết quả này cho thấy biểu diễn DPS có thể giảm số chiều tính toán trong phạm vi cấu hình đang xét, đồng thời vẫn giữ sai số nhỏ. Hướng phát triển tiếp theo là quét tham số DPS, mở rộng kích thước mô phỏng và tái tạo một kết quả định lượng cụ thể trong bài báo gốc.
+
+\vfill
+\begin{tabularx}{\textwidth}{>{\centering\arraybackslash}X>{\centering\arraybackslash}X}
+    \centering
+    & Sinh viên thực hiện \\
+    \centering
+    &\fontsize{10pt}{0}\selectfont Ký và ghi rõ họ tên \\
+    \centering
+\end{tabularx}
+  
+\cleardoublepage

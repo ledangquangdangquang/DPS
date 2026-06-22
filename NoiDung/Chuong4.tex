@@ -1,0 +1,140 @@
+\chaptercustom{4}{KẾT QUẢ MÔ PHỎNG VÀ THẢO LUẬN}
+\setcounter{section}{4}
+\label{chap:simulation_results}
+
+\subsection{Nguồn dữ liệu và phạm vi đánh giá}
+\label{subsec:ch4_data_scope}
+
+Chương này đánh giá kết quả của quy trình mô phỏng đã trình bày ở Chương 3. Phần trình bày lần lượt trả lời ba câu hỏi: kênh tái tạo có giữ được dạng biến thiên của kênh SoCE hay không; sai số giữa các nhánh khác nhau như thế nào; và chi phí thời gian quan sát được trong lần chạy hiện tại là bao nhiêu. Các nhận xét định lượng chỉ dựa trên các hình và bảng kết quả đã được kiểm chứng.
+
+Trong mô phỏng này, SoCE được dùng làm kênh tham chiếu vì nó tính trực tiếp đóng góp của từng MPC tại từng mẫu. Ba nhánh được so sánh với tham chiếu gồm DPS chính xác, DPS xấp xỉ 4D và phương pháp hybrid. Vì cả bốn nhánh dùng cùng một tập MPC, sai khác ở đầu ra xuất phát từ cách tính hệ số và tái tạo kênh, không phải từ một kịch bản truyền sóng khác. Việc đánh giá bắt đầu bằng quan sát định tính trên đáp ứng kênh, sau đó mới dùng chỉ tiêu sai số để định lượng mức sai khác.
+
+Bảng~\ref{tab:ch4_simulation_config} tóm tắt cấu hình mô phỏng dùng cho phần đánh giá. Trong đó, \(M,Q\) xác định số mẫu thời gian và tần số; \(N_{\mathrm{Tx}},N_{\mathrm{Rx}}\) xác định kích thước mảng anten; \(P\) là số MPC; còn \(D_t,D_f,D_{\mathrm{Tx}},D_{\mathrm{Rx}}\) là số vector DPS được giữ lại ở bốn chiều. Các hệ số \(r\) biểu thị độ phân giải của cơ sở dùng khi xấp xỉ hệ số DPS, không phải số mẫu của khối kênh.
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Cấu hình mô phỏng dùng cho kết quả Chương 4}
+    \label{tab:ch4_simulation_config}
+    \begin{tabular}{ll}
+        \toprule
+        Tham số & Giá trị \\
+        \midrule
+        \(M,Q,N_{\mathrm{Tx}},N_{\mathrm{Rx}}\) & \(256,64,4,4\) \\
+        \(P\) & \(80\) MPC \\
+        \(D_t,D_f,D_{\mathrm{Tx}},D_{\mathrm{Rx}}\) & \(6,9,4,4\) \\
+        \(D_{\mathrm{total}}\) & \(864\) \\
+        \(r_t,r_f,r_{\mathrm{Tx}},r_{\mathrm{Rx}}\) & \(2,512,512,512\) \\
+        \(\nu_{\mathrm{D,max}}\) & \(4{,}8225\times10^{-5}\) \\
+        \(\theta_{\max}\) & \(5{,}55\times10^{-2}\) \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{So sánh đáp ứng kênh}
+\label{subsec:ch4_channel_response}
+
+Trước hết, cần kiểm tra liệu phương pháp tái tạo có giữ được cấu trúc chung của đáp ứng kênh hay không. Hình~\ref{fig:mimo_dps_kaltenberger_approx_tx1_rx1} minh họa biên độ đáp ứng của cặp anten phát--thu thứ nhất. Trục \(m\) biểu diễn chỉ số mẫu thời gian, trục \(q\) biểu diễn chỉ số điểm tần số, còn màu sắc biểu diễn độ lớn của hệ số kênh phức. Bốn ô lần lượt thể hiện SoCE tham chiếu, DPS chính xác, phương pháp hybrid và sai số tuyệt đối giữa SoCE với hybrid.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{results/figures/mimo_dps_kaltenberger_approx_tx1_rx1.png}
+    \caption{So sánh đáp ứng kênh giữa SoCE, DPS chính xác và phương pháp hybrid cho cặp anten phát--thu thứ nhất}
+    \label{fig:mimo_dps_kaltenberger_approx_tx1_rx1}
+\end{figure}
+
+Quan sát Hình~\ref{fig:mimo_dps_kaltenberger_approx_tx1_rx1} cho thấy đáp ứng tái tạo bằng DPS chính xác có dạng biên độ gần với SoCE tham chiếu. Phương pháp hybrid cũng giữ được vùng biên độ lớn, nhỏ và xu hướng biến thiên theo thời gian--tần số. Ô sai số tuyệt đối ở góc dưới bên phải giúp xác định vị trí sai khác, nhưng hình ảnh của một cặp anten chưa đủ để đánh giá toàn bộ tensor kênh. Vì vậy, phần tiếp theo sử dụng MSE, NMSE và sai số cực đại được tính trên tất cả mẫu thời gian, tần số và cặp anten.
+
+\subsection{Kết quả sai số và thời gian chạy}
+\label{subsec:ch4_error_runtime}
+
+Ba chỉ tiêu sai số cung cấp ba cách nhìn bổ sung. MSE là trung bình bình phương độ lớn sai số trên toàn bộ tensor; sai số tuyệt đối lớn nhất cho biết trường hợp lệch nhiều nhất tại một phần tử; còn NMSE chuẩn hóa MSE theo công suất trung bình của kênh tham chiếu. Nhờ phép chuẩn hóa, NMSE là đại lượng không có đơn vị và thuận tiện để so sánh giữa các nhánh. Với kênh tham chiếu \(H_{\mathrm{SoCE}}\) và kênh tái tạo \(\hat{H}\), NMSE được xác định bởi:
+\begin{equation}
+\mathrm{NMSE}
+=
+\frac{\mathbb{E}\{|H_{\mathrm{SoCE}}-\hat{H}|^2\}}
+{\mathbb{E}\{|H_{\mathrm{SoCE}}|^2\}}.
+\label{eq:ch4_nmse_definition}
+\end{equation}
+Trong \eqref{eq:ch4_nmse_definition}, ký hiệu \(\mathbb{E}\{\cdot\}\) là phép lấy trung bình trên toàn bộ phần tử của khối kênh mô phỏng, không phải trung bình của nhiều lần sinh kênh độc lập. Giá trị NMSE càng gần không thì kênh tái tạo càng gần SoCE theo nghĩa năng lượng sai số.
+
+Hình~\ref{fig:mimo_dps_kaltenberger_approx_nmse_bar} biểu diễn NMSE của ba nhánh DPS theo thang logarit. Trên thang này, mỗi khoảng cách một bậc tương ứng với hệ số mười; do đó, biểu đồ cho phép quan sát rõ các giá trị sai số chênh nhau nhiều bậc độ lớn.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{results/figures/mimo_dps_kaltenberger_approx_nmse_bar.png}
+    \caption{So sánh NMSE của các nhánh DPS so với kênh SoCE tham chiếu}
+    \label{fig:mimo_dps_kaltenberger_approx_nmse_bar}
+\end{figure}
+
+Từ Hình~\ref{fig:mimo_dps_kaltenberger_approx_nmse_bar}, nhánh DPS chính xác có NMSE nhỏ nhất, ở mức \(8{,}53\times10^{-9}\). Nhánh DPS xấp xỉ 4D có NMSE lớn nhất, \(1{,}99\times10^{-4}\). Phương pháp hybrid đạt \(4{,}29\times10^{-7}\), nằm giữa hai nhánh trên nhưng thấp hơn xấp xỉ 4D hơn hai bậc độ lớn. Thứ tự này cho thấy việc tránh xấp xỉ DPS ở hai chiều anten giúp giảm sai số trong cấu hình hiện tại; nguyên nhân của từng nhánh được phân tích riêng ở Mục~\ref{subsec:ch4_branch_discussion}.
+
+Bảng~\ref{tab:ch4_metrics} bổ sung các giá trị MSE, sai số cực đại và hai thành phần thời gian. Cột \(t_{\alpha}\) là thời gian tạo tensor hệ số; cột \(t_{\mathrm{rec}}\) là thời gian tái tạo kênh từ tensor đó. Tổng hai cột là thời gian xử lý của một nhánh DPS sau khi các cơ sở cần thiết đã được tạo.
+
+\begin{table}[H]
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{3pt}
+    \caption{Sai số và thời gian chạy của các nhánh mô phỏng}
+    \label{tab:ch4_metrics}
+    \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X c c c c c}
+        \toprule
+        Nhánh mô phỏng & MSE & NMSE & Max \(|e|\) & \(t_{\alpha}\) (s) & \(t_{\mathrm{rec}}\) (s) \\
+        \midrule
+        DPS chính xác
+        & \(3{,}43\times10^{-9}\)
+        & \(8{,}53\times10^{-9}\)
+        & \(2{,}01\times10^{-4}\)
+        & \(2{,}13\times10^{-2}\)
+        & \(2{,}42\times10^{-2}\) \\
+        DPS xấp xỉ 4D
+        & \(8{,}03\times10^{-5}\)
+        & \(1{,}99\times10^{-4}\)
+        & \(2{,}23\times10^{-2}\)
+        & \(6{,}17\times10^{-2}\)
+        & \(1{,}93\times10^{-2}\) \\
+        Phương pháp hybrid
+        & \(1{,}72\times10^{-7}\)
+        & \(4{,}29\times10^{-7}\)
+        & \(1{,}67\times10^{-3}\)
+        & \(2{,}23\times10^{-2}\)
+        & \(3{,}07\times10^{-3}\) \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+Các giá trị trong Bảng~\ref{tab:ch4_metrics} cho thấy MSE, NMSE và sai số tuyệt đối lớn nhất đều xếp ba nhánh theo cùng một thứ tự. Điều này giúp tránh kết luận dựa riêng vào một chỉ tiêu. Về thời gian, nhánh DPS xấp xỉ 4D tốn nhiều thời gian tạo hệ số nhất vì phải xấp xỉ trên cả bốn chiều. Phương pháp hybrid có thời gian tái tạo thấp nhất vì chỉ thực hiện phép tái tạo DPS theo thời gian và tần số; hai chiều anten đã được giữ trực tiếp trong tensor hệ số.
+
+Hình~\ref{fig:mimo_dps_kaltenberger_approx_runtime_bar} so sánh thời gian chạy của SoCE và ba nhánh DPS trong cùng lần mô phỏng. Đối với mỗi nhánh DPS, tổng thời gian gồm thời gian tạo hệ số và thời gian tái tạo trong Bảng~\ref{tab:ch4_metrics}. Thời gian tạo các cơ sở DPS và cơ sở độ phân giải cao được thực hiện trước các lệnh đo thời gian nên chưa được tính trong biểu đồ.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{results/figures/mimo_dps_kaltenberger_approx_runtime_bar.png}
+    \caption{So sánh thời gian chạy của SoCE và các nhánh DPS trong cấu hình mô phỏng hiện tại}
+    \label{fig:mimo_dps_kaltenberger_approx_runtime_bar}
+\end{figure}
+
+Từ Hình~\ref{fig:mimo_dps_kaltenberger_approx_runtime_bar}, thời gian tính SoCE tham chiếu trong lần chạy này là \(0{,}222372\,\mathrm{s}\). Tổng thời gian tạo hệ số và tái tạo của DPS chính xác là khoảng \(0{,}045555\,\mathrm{s}\), của DPS xấp xỉ 4D là khoảng \(0{,}080983\,\mathrm{s}\), và của phương pháp hybrid là khoảng \(0{,}025322\,\mathrm{s}\). Trong phạm vi phép đo này, cả ba tổng thời gian đều nhỏ hơn thời gian SoCE và hybrid có tổng thời gian thấp nhất. Tuy nhiên, kết quả chưa bao gồm chi phí tạo cơ sở DPS, đồng thời còn phụ thuộc vào máy tính, phiên bản MATLAB, cách vector hóa và cấp phát bộ nhớ. Vì vậy, các số đo chỉ dùng để so sánh các nhánh trong cùng điều kiện chạy, không phải bảo đảm về tốc độ cho mọi cấu hình.
+
+\subsection{Thảo luận từng nhánh mô phỏng}
+\label{subsec:ch4_branch_discussion}
+
+Nhánh DPS chính xác trả lời câu hỏi liệu không gian con đã chọn có đủ để chứa phần lớn năng lượng kênh hay không. NMSE \(8{,}53\times10^{-9}\) cho thấy, với \(D_t=6\), \(D_f=9\), \(D_{\mathrm{Tx}}=4\) và \(D_{\mathrm{Rx}}=4\), sai số cắt không gian con rất nhỏ trong cấu hình hiện tại. Kết quả này không có nghĩa DPS tái tạo chính xác tuyệt đối, mà cho thấy phép chiếu chính xác lên số vector đang giữ gần với SoCE.
+
+Nhánh DPS xấp xỉ 4D trả lời câu hỏi điều gì xảy ra khi không tính các tích vô hướng chính xác. NMSE \(1{,}99\times10^{-4}\) lớn hơn đáng kể so với DPS chính xác vì hệ số được ước lượng từ hàm sóng DPS trên lưới độ phân giải cao. Khi phép xấp xỉ được áp dụng cho cả bốn chiều, sai số hệ số của từng chiều cùng tham gia vào tích tensor. Vì vậy, nhánh này chủ yếu đóng vai trò chẩn đoán ảnh hưởng của công thức xấp xỉ hệ số, thay vì là lựa chọn tốt nhất trong cấu hình đang xét.
+
+Phương pháp hybrid trả lời câu hỏi liệu chỉ xấp xỉ hai chiều có kích thước lớn hơn có tạo được cân bằng tốt hơn hay không. Nhánh này đạt NMSE \(4{,}29\times10^{-7}\) so với SoCE và \(4{,}20\times10^{-7}\) so với DPS chính xác. DPS xấp xỉ chỉ được dùng cho thời gian và tần số, còn phần không gian anten được tính trực tiếp bằng hàm mũ. Với \(N_{\mathrm{Tx}}=N_{\mathrm{Rx}}=4\), cách xử lý này tránh sai số xấp xỉ ở hai chiều anten mà vẫn giữ thời gian tái tạo thấp trong phép đo hiện tại. Do đó, hybrid tạo được sự cân bằng phù hợp hơn giữa sai số và thời gian quan sát được trong cấu hình này.
+
+\subsection{Giới hạn của kết quả hiện tại}
+\label{subsec:ch4_limitations}
+
+Các kết quả trong chương này cần được hiểu trong phạm vi một cấu hình mô phỏng cụ thể. Thứ nhất, MPC được sinh ngẫu nhiên đều trong miền giới hạn băng và dùng seed cố định để tái lập kết quả; chương chưa khảo sát độ biến thiên qua nhiều lần sinh kênh. Thứ hai, số chiều DPS và hệ số phân giải được chọn theo quy tắc hiện tại của chương trình, chưa tối ưu tự động theo một ngưỡng sai số đặt trước. Thứ ba, phép đo thời gian chưa bao gồm bước tạo cơ sở DPS và phụ thuộc vào môi trường thực thi, do đó chỉ nên dùng để so sánh tương đối trong cùng một lần chạy.
+
+Ngoài ra, mô phỏng hiện tại chưa khớp lại đầy đủ một hình hoặc bảng cụ thể trong bài báo Kaltenberger với toàn bộ tham số tương ứng. Vì vậy, các kết luận từ Bảng~\ref{tab:ch4_metrics} nên được diễn đạt trong phạm vi cấu hình hiện tại: DPS chính xác kiểm chứng tốt không gian con, nhánh DPS xấp xỉ 4D cho thấy ảnh hưởng của xấp xỉ hệ số, và phương pháp hybrid là lựa chọn phù hợp hơn để thảo luận cho kênh MIMO băng rộng trong mô phỏng này.
+
+\subsection{Kết luận chương}
+\label{subsec:ch4_conclusion}
+
+Chương này đã trình bày kết quả mô phỏng và phân tích sai số, thời gian tính toán của các nhánh biểu diễn kênh. Trong cấu hình hiện tại, DPS chính xác đạt sai số rất nhỏ so với SoCE, cho thấy cơ sở DPS đã chọn đủ để kiểm chứng biểu diễn không gian con. Nhánh DPS xấp xỉ 4D có sai số lớn hơn do áp dụng xấp xỉ hệ số trên cả bốn chiều. Phương pháp hybrid đạt NMSE \(4{,}29\times10^{-7}\) so với SoCE và có thời gian tái tạo nhỏ trong lần chạy hiện tại, do đó là nhánh chính để thảo luận về mô phỏng MIMO băng rộng có độ phức tạp thấp. Chương 5 sẽ tổng kết các kết quả này, nêu hạn chế và đề xuất hướng phát triển tiếp theo.
+
+\cleardoublepage
