@@ -1,8 +1,8 @@
 # Kịch bản tổng thể đồ án tốt nghiệp
 
-## Tên đồ án đề xuất
+## Tên đồ án
 
-**Mô phỏng kênh MIMO đa đường dựa trên hình học có độ phức tạp thấp sử dụng chuỗi DPS**
+**Mô phỏng kênh MIMO băng rộng biến thiên theo thời gian dựa trên mô hình hình học với độ phức tạp thấp bằng chuỗi DPS**
 
 ## Vai trò của kịch bản
 
@@ -14,7 +14,7 @@ Mục tiêu của kịch bản là giữ mạch lập luận thống nhất:
 2. Chương 2 phân tích lợi thế của DPS so với SoCE về mặt lý thuyết và độ phức tạp.
 3. Chương 3 mới trình bày mô hình hệ thống và cách triển khai mô phỏng trong MATLAB.
 4. Chương 4 trình bày kết quả mô phỏng đã có, không tự tạo số liệu.
-5. Chương 5 kết luận, nêu hạn chế và hướng phát triển.
+5. Phần kết luận tổng hợp kết quả, nêu hạn chế và hướng phát triển; không tổ chức thành một chương đánh số riêng.
 
 ## Nguồn nội dung chính
 
@@ -75,12 +75,15 @@ Chương 1 đóng vai trò đặt vấn đề, không đi sâu vào toàn bộ m
 
 #### Nội dung cần có
 
-1. Bối cảnh mô phỏng kênh MIMO băng rộng.
-2. GCM và SoCE là mô hình có ý nghĩa vật lý.
-3. SoCE trực tiếp có độ phức tạp lớn vì phải cộng \(P\) MPC tại từng điểm mẫu.
-4. Kênh có cấu trúc giới hạn băng theo Doppler, trễ, AoD và AoA.
-5. DPS phù hợp vì tối ưu cho tín hiệu giới hạn băng trên khối hữu hạn.
-6. Nêu định hướng đồ án: dùng SoCE làm chuẩn, dùng DPS để giảm độ phức tạp, kiểm chứng bằng MATLAB.
+1. Tổng quan ngắn về mô hình kênh trong thông tin vô tuyến: Rayleigh, Rician, TDL và GCM.
+2. Đặt GCM trong bối cảnh các mô hình MIMO băng rộng hiện đại như COST 2100, WINNER II, QuaDRiGa và 3GPP TR 38.901, nhưng không đi sâu vào tham số chuẩn hóa của các mô hình này.
+3. Giải thích vì sao đồ án chọn GCM/SoCE làm mô hình tham chiếu có ý nghĩa vật lý.
+4. Nêu các hướng giảm độ phức tạp ở mức định hướng: tối ưu SoCE, CE-BEM/DFT, Karhunen--Loève và DPS.
+5. SoCE trực tiếp có độ phức tạp lớn vì phải cộng \(P\) MPC tại từng điểm mẫu.
+6. Kênh có cấu trúc giới hạn băng theo Doppler, trễ, AoD và AoA.
+7. DPS phù hợp vì tối ưu cho tín hiệu giới hạn băng trên khối hữu hạn.
+8. Nêu định hướng đồ án: dùng SoCE làm chuẩn, dùng DPS để giảm độ phức tạp, kiểm chứng bằng MATLAB.
+9. Phát biểu rõ các câu hỏi nghiên cứu và tiêu chí đánh giá gồm độ trung thực, thời gian, khả năng mở rộng và khả năng tái sử dụng chi phí tiền xử lý.
 
 #### Công thức nên xuất hiện
 
@@ -142,6 +145,12 @@ h_m = \sum_{p=0}^{P-1}\eta_p e^{j2\pi\nu_p m}.
    - hệ số trong nhánh hybrid.
 
 9. Nêu trade-off: giảm độ phức tạp nhưng phát sinh sai số cắt không gian con, sai số xấp xỉ hệ số và yêu cầu bộ nhớ cho cơ sở DPS độ phân giải cao.
+10. Bổ sung hai đối chứng lý thuyết:
+
+   - SoCE đệ quy để phân biệt lợi ích do tối ưu tạo pha với lợi ích do giảm số chiều;
+   - CE-BEM để so sánh cơ sở Fourier đều với cơ sở DPS tập trung băng trên khối hữu hạn.
+
+11. So sánh bậc độ phức tạp, nguồn sai số và điều kiện áp dụng của SoCE trực tiếp, SoCE đệ quy, CE-BEM và các nhánh DPS; không đưa kết quả thời gian hoặc NMSE cho nhánh chưa được triển khai.
 
 #### Điểm cần nhấn mạnh
 
@@ -223,6 +232,9 @@ xi_p = sin(psi_p)D_s/lambda
    - Hybrid.
 
 8. Ánh xạ biến MATLAB với ký hiệu trong đồ án.
+9. Trình bày thuật toán chọn số chiều DPS tự động từ tổng đuôi trị riêng theo phương trình (35) và tiêu chuẩn sai số trong phương trình (38) của bài báo.
+10. Phân biệt quy tắc cố định `guard = 4` trong script chính với quy tắc tự động phân bổ ngưỡng sai lệch cho bốn chiều; không trộn kết quả của hai cấu hình.
+11. Tóm tắt riêng đầu vào, đầu ra và trình tự xử lý của ba thuật toán: SoCE trực tiếp, chiếu DPS chính xác và hybrid.
 
 #### Liên hệ với code
 
@@ -355,6 +367,22 @@ Runtime hybrid approx reconstruction = 0.003067 s
 3. Hybrid cho NMSE nhỏ hơn Approx DPS 4D và phù hợp hơn để thảo luận cho MIMO băng rộng.
 4. Thời gian chạy MATLAB chỉ có ý nghĩa tham khảo, vì phụ thuộc máy và cách vector hóa.
 5. Không dùng một cấu hình mô phỏng để kết luận tổng quát rằng phương pháp luôn tối ưu.
+6. Benchmark bổ sung so sánh SoCE trực tiếp, SoCE đệ quy, CE-BEM và DPS chính xác trên cùng tập MPC; báo riêng thời gian tạo cơ sở và thời gian xử lý mỗi khối.
+7. Phân tích điểm hòa vốn theo cả số MPC và số khối cần tái sử dụng cơ sở; xem các ngưỡng thu được là kết quả thực nghiệm phụ thuộc môi trường.
+8. Dùng công thức tổng thời gian tiền xử lý cộng thời gian theo số khối để giải thích điều kiện tồn tại và ý nghĩa của điểm hòa vốn.
+
+#### Benchmark bốn phương pháp
+
+Benchmark dùng `P = [5,10,20,40,80,160,320]`, 20 seed cho NMSE và 10 lần đo thời gian sau khởi động. CE-BEM và DPS dùng cùng số chiều `(6,9,4,4)`. Tại `P = 80`, các giá trị trung vị hiện có là:
+
+```text
+Direct SoCE: runtime = 4.708e-2 s
+Recursive SoCE: runtime = 4.482e-2 s, NMSE = 3.05e-29
+CE-BEM: runtime = 4.454e-3 s, NMSE = 2.96e-8
+Exact DPS: runtime = 5.164e-3 s, NMSE = 3.33e-9
+```
+
+Khi viết kết quả, phải nêu rằng CE-BEM nhanh hơn trong phép đo này nhưng DPS có NMSE thấp hơn với cùng số chiều; không suy rộng thứ tự thời gian sang mọi cách cài đặt. Chi phí tạo cơ sở và giả thiết tái sử dụng cơ sở phải xuất hiện trong phân tích điểm hòa vốn.
 
 #### Hình chính nên chèn
 
@@ -387,12 +415,13 @@ Các cột nên có:
 
 Không cần đưa quá nhiều chữ số trong luận văn; nên dùng dạng khoa học, ví dụ \(8{,}53\times 10^{-9}\).
 
-### Chương 5: Kết luận và hướng phát triển
+### Phần kết luận và hướng phát triển
 
-Tên gợi ý:
+Phần này đặt sau Chương 4 và không đánh số chương. Định dạng gợi ý:
 
 ```latex
-\chaptercustom{5}{KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN}
+\phantomsection\section*{\centering KẾT LUẬN}
+\addcontentsline{toc}{section}{\numberline{}KẾT LUẬN}
 ```
 
 #### Nội dung cần có
@@ -422,31 +451,17 @@ Tên gợi ý:
    - chuẩn hóa mã thành các hàm riêng;
    - khảo sát thêm các phân bố MPC không đều.
 
-## Phụ lục đề xuất
+## Cấu trúc phụ lục
 
-### Phụ lục A: Tham số mô phỏng
+Phụ lục được tổ chức thành năm mục:
 
-Đưa bảng các tham số vật lý, kích thước mô phỏng, số chiều DPS và hệ số phân giải.
+1. A1: tham số đầy đủ của cấu hình chính, thí nghiệm quét và benchmark;
+2. A2: mã tạo cơ sở DPS, gồm cơ sở dịch băng và phương án trị riêng dự phòng;
+3. A3: mã tính MSE, NMSE và sai số tuyệt đối cực đại;
+4. A4: toàn bộ script benchmark SoCE trực tiếp, SoCE đệ quy, CE-BEM và DPS chính xác;
+5. A5: mô tả các tệp CSV thô và trích các bản ghi tiêu biểu.
 
-### Phụ lục B: Hàm MATLAB chính
-
-Nên đưa các đoạn:
-
-1. `compute_mimo_soce`.
-2. `make_dps_dimension`.
-3. `approximate_gamma_1d`.
-4. `build_alpha_approx_4d`.
-5. `build_alpha_approx_hybrid`.
-6. `reconstruct_hybrid`.
-
-### Phụ lục C: Hướng dẫn chạy lại mô phỏng
-
-```text
-1. Mở MATLAB tại thư mục gốc dự án.
-2. Chạy `tai lieu/mimo_dps_kaltenberger_approx.m`.
-3. Kiểm tra bảng `results/tables/mimo_dps_kaltenberger_approx_metrics.csv`.
-4. Kiểm tra hình `results/figures/mimo_dps_kaltenberger_approx_tx1_rx1.png`.
-```
+Mã và dữ liệu trong phụ lục phải được nhập trực tiếp từ tệp nguồn hiện hành bằng `\lstinputlisting` để tránh sai khác giữa bản in và chương trình thực thi. Với CSV có hàng trăm bản ghi, chỉ trích phần đầu trong bản in và giữ tệp đầy đủ cùng mã nguồn đồ án.
 
 ## Các giả thiết phải nêu rõ khi viết
 

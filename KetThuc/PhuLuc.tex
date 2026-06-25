@@ -1,19 +1,189 @@
-\phantomsection\section*{\centering PHỤ LỤC}
+\cleardoublepage
+\phantomsection
+\section*{\centering PHỤ LỤC}
 \addcontentsline{toc}{section}{\numberline{}PHỤ LỤC}
+\label{app:simulation_materials}
+\setcounter{table}{0}
+\renewcommand{\thetable}{A.\arabic{table}}
+\setcounter{lstlisting}{0}
+\renewcommand{\thelstlisting}{A.\arabic{lstlisting}}
 
+Phụ lục này tổng hợp cấu hình mô phỏng, các khối mã MATLAB cốt lõi và dữ liệu đầu ra dùng để kiểm chứng các kết quả trong Chương 4. Các đoạn mã được trích trực tiếp từ phiên bản chương trình đã sử dụng để sinh hình và bảng của đồ án.
 
-\texttt{\fontsize{10pt}{0pt}\selectfont Mã nguồn chương trình (nếu có) dược đưa vào đây sử dụng font Courier New, cỡ 10pt}
+\subsection*{A1. Tham số đầy đủ của mô phỏng}
+\phantomsection
+\addcontentsline{toc}{subsection}{A1. Tham số đầy đủ của mô phỏng}
+\label{app:parameters}
 
-\begin{enumerate}[label=\textbf{A\arabic*.}]
-  
-    \item  \textbf{Chi tiết số liệu thí nghiệm}
-    
-    Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có).
-    \item  \textbf{Chi tiết các bước tính toán}
-    
-    Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có).
-    \item  \textbf{Chi tiết sơ đồ mô phỏng}
-    
-    Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có). Trình phụ lục tại đây (nếu có).
-    
-\end{enumerate}
+Bảng~\ref{tab:app_physical_parameters} trình bày các tham số vật lý và miền giới hạn băng. Các đại lượng Doppler, trễ và tần số không gian đều được chuẩn hóa theo bước lấy mẫu tương ứng trước khi đưa vào mô hình SoCE.
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Tham số vật lý và miền giới hạn băng}
+    \label{tab:app_physical_parameters}
+    \begin{tabularx}{\textwidth}{l l X}
+        \toprule
+        Tham số & Giá trị & Ý nghĩa \\
+        \midrule
+        \(c\) & \(3\times10^8\,\mathrm{m/s}\) & Vận tốc ánh sáng \\
+        \(f_c\) & \(2\,\mathrm{GHz}\) & Tần số sóng mang \\
+        \(v_{\max}\) & \(100\,\mathrm{km/h}\) & Vận tốc cực đại của đầu cuối \\
+        \(T_s\) & \(1/(3{,}84\times10^6)\,\mathrm{s}\) & Chu kỳ lấy mẫu thời gian \\
+        \(\nu_{\mathrm{D,max}}\) & \(4{,}822530864\times10^{-5}\) & Doppler chuẩn hóa một phía \\
+        \(\Delta f\) & \(15\,\mathrm{kHz}\) & Khoảng cách giữa các điểm tần số \\
+        \(\tau_{\max}\) & \(3{,}7\,\mathrm{\mu s}\) & Trễ cực đại \\
+        \(\theta_{\max}\) & \(0{,}0555\) & Trễ chuẩn hóa cực đại \\
+        \(D_s/\lambda\) & \(0{,}5\) & Khoảng cách anten chuẩn hóa \\
+        \(\phi,\psi\) & \([-5^\circ,5^\circ]\) & Miền góc phát và góc thu \\
+        \(\zeta,\xi\) & \([-0{,}04358,0{,}04358]\) & Miền tần số không gian xấp xỉ \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+Bảng~\ref{tab:app_numerical_parameters} liệt kê kích thước tensor kênh, số chiều DPS và các hệ số phân giải của cấu hình chính. Số chiều được xác định theo quy tắc số chiều thiết yếu cộng bốn véc-tơ dự phòng và bị chặn bởi số mẫu của từng chiều.
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Tham số số của cấu hình mô phỏng chính}
+    \label{tab:app_numerical_parameters}
+    \begin{tabularx}{\textwidth}{l l X}
+        \toprule
+        Nhóm tham số & Giá trị & Diễn giải \\
+        \midrule
+        \(M,Q\) & \(256,64\) & Số mẫu thời gian và tần số \\
+        \(N_{\mathrm{Tx}},N_{\mathrm{Rx}}\) & \(4,4\) & Số anten phát và anten thu \\
+        \(P\) & \(80\) & Số MPC trong cấu hình chính \\
+        \(D_t,D_f,D_{\mathrm{Tx}},D_{\mathrm{Rx}}\) & \(6,9,4,4\) & Số véc-tơ DPS giữ lại \\
+        \(D_{\mathrm{total}}\) & \(864\) & Số hệ số của tensor DPS bốn chiều \\
+        \(r_t,r_f,r_{\mathrm{Tx}},r_{\mathrm{Rx}}\) & \(2,512,512,512\) & Hệ số tăng độ phân giải \\
+        Seed & \texttt{rng(1)} & Seed của cấu hình mô phỏng chính \\
+        Trọng số MPC & \(\mathcal{CN}(0,1/P)\) & Trọng số Gaussian phức tròn, công suất kỳ vọng tổng bằng một \\
+        Vị trí MPC & Phân bố đều trong miền băng & Doppler, trễ, AoD và AoA được sinh trong các miền giới hạn tương ứng \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+Các thí nghiệm quét và benchmark dùng cấu hình không gian--thời gian giống cấu hình chính nhưng thay đổi số MPC. Bảng~\ref{tab:app_experiment_parameters} ghi rõ số hiện thực và cách đo thời gian để phân biệt dữ liệu ngẫu nhiên với phép đo hiệu năng.
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Cấu hình các thí nghiệm quét và benchmark}
+    \label{tab:app_experiment_parameters}
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        Thành phần & Cấu hình \\
+        \midrule
+        Sweep DPS--hybrid & \(P\in\{10,20,40,80,160,320\}\) \\
+        Benchmark bốn phương pháp & \(P\in\{5,10,20,40,80,160,320\}\) \\
+        Số hiện thực đánh giá NMSE & 20 seed; các cấu hình \(P\) dùng các tập MPC lồng nhau trong từng seed \\
+        Đo thời gian & 10 lần sau bước khởi động, báo trung vị và khoảng tứ phân vị \\
+        Seed đo thời gian benchmark & \texttt{runtimeSeed = 1001} \\
+        Chi phí tạo cơ sở & Đo riêng và không gộp vào thời gian xử lý mỗi khối \\
+        Phiên bản MATLAB & R2025b, mã phiên bản \texttt{25.2.0.2998904} \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection*{A2. Mã sinh cơ sở DPS}
+\phantomsection
+\addcontentsline{toc}{subsection}{A2. Mã sinh cơ sở DPS}
+\label{app:dps_code}
+
+Hàm \texttt{make\_dps\_dimension(...)} tạo đồng thời cơ sở dùng để tái tạo và cơ sở độ phân giải cao dùng để xấp xỉ hệ số. Cơ sở dịch băng được tạo từ DPSS đối xứng rồi nhân với sóng mang phức có tâm băng \(W_0\).
+
+\lstinputlisting[
+    language=Matlab,
+    firstline=265,
+    lastline=279,
+    firstnumber=265,
+    caption={Tạo dữ liệu cơ sở DPS cho một chiều},
+    label={lst:app_make_dps_dimension}
+]{tai lieu/mimo_dps_kaltenberger_approx.m}
+
+\lstinputlisting[
+    language=Matlab,
+    firstline=431,
+    lastline=501,
+    firstnumber=431,
+    caption={Tạo cơ sở DPS dịch băng và phương án tính từ bài toán trị riêng},
+    label={lst:app_shifted_dpss}
+]{tai lieu/mimo_dps_kaltenberger_approx.m}
+
+Trong khối mã trên, bước chuẩn hóa dấu bảo đảm các véc-tơ DPS tuân theo cùng một quy ước. Khi hàm DPS dựng sẵn của MATLAB không khả dụng, phương án dự phòng xây dựng trực tiếp ma trận tập trung băng và lấy các véc-tơ riêng ứng với các trị riêng lớn nhất.
+
+\subsection*{A3. Mã tính NMSE}
+\phantomsection
+\addcontentsline{toc}{subsection}{A3. Mã tính NMSE}
+\label{app:nmse_code}
+
+NMSE được tính trên toàn bộ tensor thời gian--tần số--anten phát--anten thu. Mẫu số là công suất trung bình của kênh tham chiếu SoCE; do đó, NMSE là đại lượng không có đơn vị. Cùng khối mã cũng tính MSE và sai số tuyệt đối cực đại để bổ sung hai cách đánh giá khác.
+
+\lstinputlisting[
+    language=Matlab,
+    firstline=125,
+    lastline=143,
+    firstnumber=125,
+    caption={Tính MSE, NMSE và sai số tuyệt đối cực đại},
+    label={lst:app_nmse}
+]{tai lieu/mimo_dps_kaltenberger_approx.m}
+
+Trong benchmark nhiều seed, phép tính tương tự được thực hiện riêng cho từng hiện thực kênh. Trung vị và các phân vị 25\%, 75\% chỉ được lấy sau khi toàn bộ giá trị NMSE đơn lẻ đã được lưu.
+
+\subsection*{A4. Chương trình benchmark bốn phương pháp}
+\phantomsection
+\addcontentsline{toc}{subsection}{A4. Chương trình benchmark bốn phương pháp}
+\label{app:benchmark_script}
+
+Chương trình dưới đây so sánh SoCE trực tiếp, SoCE đệ quy, CE-BEM và DPS chính xác trên cùng các tập MPC. Phần đầu thiết lập cơ sở và cấu hình; phần tiếp theo đánh giá NMSE trên 20 seed, đo thời gian sau bước khởi động, lưu dữ liệu thô và tạo các hình dùng trong Chương 4.
+
+\lstinputlisting[
+    language=Matlab,
+    caption={Chương trình benchmark SoCE, CE-BEM và DPS},
+    label={lst:app_four_method_benchmark}
+]{scripts/mimo_four_method_benchmark.m}
+
+\subsection*{A5. Kết quả thô}
+\phantomsection
+\addcontentsline{toc}{subsection}{A5. Kết quả thô}
+\label{app:raw_results}
+
+Dữ liệu thô được lưu ở định dạng CSV để có thể kiểm tra độc lập với hình vẽ. Ba tập dữ liệu chính gồm:
+
+\begin{itemize}
+    \item Tệp NMSE benchmark có 560 bản ghi, tương ứng với 7 giá trị \(P\), 4 phương pháp và 20 seed:\\[-0.3ex]
+    {\scriptsize\path{results/tables/mimo_four_method_benchmark_nmse_raw.csv}};
+    \item Tệp thời gian benchmark có 280 bản ghi, tương ứng với 7 giá trị \(P\), 4 phương pháp và 10 lần đo:\\[-0.3ex]
+    {\scriptsize\path{results/tables/mimo_four_method_benchmark_runtime_raw.csv}};
+    \item Tệp sweep có 180 bản ghi của DPS chính xác và hybrid, gồm dữ liệu NMSE và dữ liệu thời gian:\\[-0.3ex]
+    {\scriptsize\path{results/tables/mimo_dps_kaltenberger_p_sweep_raw.csv}}.
+\end{itemize}
+
+Các tệp đầy đủ được lưu cùng mã nguồn đồ án. Các đoạn dưới đây trích phần đầu của từng tệp để thể hiện tên cột, thứ tự bản ghi và độ chính xác số được lưu; mọi bảng tổng hợp trong Chương 4 được tính từ các bản ghi này.
+
+\lstinputlisting[
+    firstline=1,
+    lastline=29,
+    caption={Trích dữ liệu NMSE thô của benchmark},
+    label={lst:app_raw_benchmark_nmse}
+]{results/tables/mimo_four_method_benchmark_nmse_raw.csv}
+
+\lstinputlisting[
+    firstline=1,
+    lastline=29,
+    caption={Trích dữ liệu thời gian thô của benchmark},
+    label={lst:app_raw_benchmark_runtime}
+]{results/tables/mimo_four_method_benchmark_runtime_raw.csv}
+
+\lstinputlisting[
+    firstline=1,
+    lastline=13,
+    caption={Trích dữ liệu thô của thí nghiệm quét số MPC},
+    label={lst:app_raw_p_sweep}
+]{results/tables/mimo_dps_kaltenberger_p_sweep_raw.csv}
+
+Các giá trị \texttt{NaN} trong tệp sweep biểu thị đại lượng không được đo ở loại bản ghi tương ứng. Chẳng hạn, bản ghi NMSE không chứa thời gian chạy, còn bản ghi thời gian không chứa sai số của một seed mới. Trường \texttt{basis\_runtime\_included = 0} xác nhận rằng thời gian tạo cơ sở DPS không nằm trong phép đo xử lý mỗi khối.
+
+\cleardoublepage

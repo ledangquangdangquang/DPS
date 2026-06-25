@@ -1,0 +1,5 @@
+method,setup_s,stable_cross_over_P
+SoCE direct,0,NaN
+SoCE recursive,0,5
+CE-BEM,0.013932,5
+Exact DPS,0.226385,5

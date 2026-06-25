@@ -17,6 +17,8 @@ Thesis labels:
 - `\ref{eq:ch2_essential_dimension}`: one-dimensional essential DPS dimension based on the time-bandwidth product.
 - `\ref{eq:ch2_dps_total_dimension}`: total number of multidimensional DPS coefficients.
 - `\ref{eq:ch2_dps_total_dimension_approx}`: approximate multidimensional essential DPS dimension from the product of one-dimensional essential dimensions.
+- `\ref{eq:ch2_recursive_phasor}` and `\ref{eq:ch2_recursive_soce}`: recursive phasor update for a SoCE baseline; mathematically equivalent to direct SoCE while retaining `O(P N_s)` complexity.
+- `\ref{eq:ch2_ce_bem}` and `\ref{eq:ch2_ce_bem_vector}`: one-dimensional complex-exponential BEM and its matrix form, used as a theoretical Fourier-basis comparator for DPS.
 - `\ref{eq:ch2_total_samples}`: total number of MIMO channel samples in one simulation block.
 - `\ref{eq:ch2_soce_operation_count}`: number of MPC-sample terms required by direct SoCE.
 - `\ref{eq:ch2_exact_gamma_complexity}`: exact one-dimensional DPS projection complexity.
@@ -36,6 +38,15 @@ Notes:
 - Chapter 2 intentionally does not report numerical NMSE or runtime values; those belong to Chapter 4 after checking `results/figures/` and `results/tables/`.
 - Chapter 2 distinguishes exact DPS projection, approximate 4D DPS, and hybrid time/frequency DPS with direct spatial exponentials.
 - Chapter 2 includes an operation-count estimate table based on current simulation dimensions. This is a complexity estimate, not a measured runtime result.
+- Recursive SoCE and CE-BEM are theoretical comparators only. They are not yet MATLAB branches and no Chapter 4 numerical result is attributed to them.
+
+Paper Figure 4 mapping:
+
+- Paper Eq. (6): DPS concentration matrix implemented by `dps_eigenvalues_by_kernel(...)` in `scripts/reproduce_paper_figure4.m`.
+- Paper Eq. (8): the plotted `lambda_d` is the energy-concentration ratio of DPS sequence `d`.
+- Paper Eq. (11): `D_prime = ceil(2*M*nu_Dmax) + 1 = 5` for `M = 256` and `M*nu_Dmax = 2`.
+- Generated values: `results/tables/paper_figure4_dps_eigenvalues.csv`.
+- Thesis location: Chapter 2, Figure `\ref{fig:ch2_paper_figure4_dps_eigenvalues}`.
 
 ## Eq. (45): Continuous wideband MIMO GCM
 
@@ -86,6 +97,9 @@ Thesis labels:
 - `\ref{eq:ch3_dps_band_mapping}`: shifted DPS band-center and half-bandwidth mapping used by `make_dps_dimension(...)`.
 - `\ref{eq:ch3_4d_dps_reconstruction}`: four-dimensional DPS tensor reconstruction.
 - `\ref{eq:ch3_total_dps_dimension}` and `\ref{eq:ch3_dps_dimension_rule}`: selected DPS dimensions in the MATLAB scripts.
+- `\ref{eq:ch3_dimension_bias}`: one-dimensional omitted-eigenvalue square-bias estimate adapted from paper Eq. (35).
+- `\ref{eq:ch3_dimension_error_allocation}`: equal allocation of the total design square-bias target across the four separable dimensions; this is a simulation design assumption, not a paper equation.
+- `\ref{eq:ch3_adaptive_dimension_rule}`: smallest retained dimension whose omitted-eigenvalue bias meets its allocated target, following the selection principle in paper Eq. (38).
 - `\ref{eq:ch3_exact_projection_coefficients}` and `\ref{eq:ch3_exact_alpha}`: exact DPS coefficient calculation.
 - `\ref{eq:ch3_hybrid_alpha}`: hybrid coefficient structure with time/frequency DPS and direct spatial exponentials.
 
@@ -97,6 +111,7 @@ MATLAB mapping:
 - `alpha_approx_4d = build_alpha_approx_4d(...)`.
 - `alpha_hybrid = build_alpha_approx_hybrid(...)`.
 - `H_exact`, `H_approx_4d`, and `H_hybrid` are reconstructed channels.
+- `scripts/mimo_dps_adaptive_dimension.m` computes full one-dimensional eigensystems, selects `D_t`, `D_f`, `D_tx`, and `D_rx` automatically, and verifies exact-DPS truncation error over 20 seeds.
 
 Notes:
 
@@ -111,16 +126,33 @@ Thesis labels:
 
 - Chapter 4 source statement: the prose now refers to verified tables and figures without listing technical file paths in the thesis body.
 - `\ref{eq:ch4_nmse_definition}`: NMSE definition used to interpret the saved metrics.
+- `\ref{eq:ch4_amortized_runtime}`: total runtime for multiple channel blocks, separating reusable setup from per-block processing.
+- `\ref{eq:ch4_break_even_blocks}`: smallest integer number of reused blocks needed to amortize setup relative to direct SoCE.
 
 Result sources:
 
 - `results/tables/mimo_dps_kaltenberger_approx_metrics.csv`
 - `results/figures/mimo_dps_kaltenberger_approx_tx1_rx1.png`
+- `results/tables/mimo_dps_kaltenberger_p_sweep_metrics.csv`
+- `results/tables/mimo_dps_kaltenberger_p_sweep_raw.csv`
+- `results/tables/mimo_dps_kaltenberger_p_sweep_summary.csv`
+- `results/figures/mimo_dps_kaltenberger_p_sweep_nmse.png`
+- `results/figures/mimo_dps_kaltenberger_p_sweep_runtime.png`
+- `results/tables/mimo_four_method_benchmark_summary.csv`
+- `results/tables/mimo_four_method_benchmark_runtime_raw.csv`
+- `results/tables/mimo_four_method_benchmark_nmse_raw.csv`
+- `results/tables/mimo_four_method_benchmark_break_even.csv`
+- `results/figures/mimo_four_method_benchmark_runtime.png`
+- `results/figures/mimo_four_method_benchmark_nmse.png`
 
 Notes:
 
 - Numerical values in Chapter 4 are rounded from the CSV file.
 - Runtime values are reported as MATLAB run results for the current environment and are not treated as hardware-independent complexity guarantees.
+- The sweep over `P = [10, 20, 40, 80, 160, 320]` keeps the channel and DPS dimensions fixed. NMSE is summarized by the median and interquartile range over 20 seeds. Runtime is summarized by the median and interquartile range over 10 post-warm-up measurements on fixed data; DPS-basis construction is excluded.
+- The authoritative sweep sources are the raw and summary CSV files. The older `mimo_dps_kaltenberger_p_sweep_metrics.csv` is retained only as a legacy single-run output and is not used for current Chapter 4 values.
+- The four-method benchmark compares direct SoCE, recursive SoCE, CE-BEM, and exact 4D DPS on the same MPC realizations. CE-BEM and DPS use equal dimensions `(6,9,4,4)`. Runtime excludes reusable basis setup from per-block measurements and reports setup separately for the amortized break-even calculation.
+- Chapter 4 labels `\ref{fig:ch4_four_method_runtime}`, `\ref{fig:ch4_four_method_nmse}`, and `\ref{tab:ch4_four_method_p80}` map to this benchmark.
 
 ## Eq. (48): Maximum normalized Doppler shift
 
@@ -178,7 +210,7 @@ Important sign mapping:
 Thesis location:
 
 - Chapter 2 approximate DPS wave-function subsection.
-- Chapter 3 approximate coefficient implementation subsection.
+- Chapter 3 Eq. `\ref{eq:ch3_approx_alpha}` and the surrounding approximate-coefficient implementation subsection.
 - Chapter 4 simulation-result discussion.
 
 ## Eq. (61)-(63): Multidimensional DPS subspace

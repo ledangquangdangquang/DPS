@@ -185,37 +185,81 @@ writetable(metrics, fullfile(resultsTableDir, 'mimo_dps_kaltenberger_approx_metr
 
 %% 11. Diagnostic plot for Tx=1, Rx=1
 fig = figure;
+xSamples = 0:Q-1;
+ySamples = 0:M-1;
+responseMagnitude = cat(3, abs(H_soce(:,:,1,1)), ...
+    abs(H_exact(:,:,1,1)), abs(H_hybrid(:,:,1,1)));
+responseColorLimits = [min(responseMagnitude(:)), max(responseMagnitude(:))];
+
 ax1 = subplot(2,2,1);
-imagesc(abs(H_soce(:,:,1,1)));
+imagesc(xSamples, ySamples, abs(H_soce(:,:,1,1)));
 axis xy; colorbar; grid on;
-title('|H_{SoCE}|');
+clim(responseColorLimits);
+title('Biên độ SoCE');
 xlabel('q'); ylabel('m');
 disable_axes_toolbar(ax1);
 
 ax2 = subplot(2,2,2);
-imagesc(abs(H_exact(:,:,1,1)));
+imagesc(xSamples, ySamples, abs(H_exact(:,:,1,1)));
 axis xy; colorbar; grid on;
-title('|H_{DPS exact}|');
+clim(responseColorLimits);
+title('Biên độ DPS chính xác');
 xlabel('q'); ylabel('m');
 disable_axes_toolbar(ax2);
 
 ax3 = subplot(2,2,3);
-imagesc(abs(H_hybrid(:,:,1,1)));
+imagesc(xSamples, ySamples, abs(H_hybrid(:,:,1,1)));
 axis xy; colorbar; grid on;
-title('|H_{Hybrid approx}|');
+clim(responseColorLimits);
+title('Biên độ hybrid');
 xlabel('q'); ylabel('m');
 disable_axes_toolbar(ax3);
 
 ax4 = subplot(2,2,4);
-imagesc(abs(err_hybrid(:,:,1,1)));
+imagesc(xSamples, ySamples, abs(err_hybrid(:,:,1,1)));
 axis xy; colorbar; grid on;
-title('|SoCE - Hybrid approx|');
+title('Sai số tuyệt đối SoCE - hybrid');
 xlabel('q'); ylabel('m');
 disable_axes_toolbar(ax4);
 
 drawnow;
 saveas(fig, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_approx_tx1_rx1.png'));
 savefig(fig, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_approx_tx1_rx1.fig'));
+
+%% 12. Bar charts for NMSE and runtime
+figNmse = figure;
+nmseValues = [nmse_exact, nmse_approx_4d, nmse_hybrid];
+bar(nmseValues);
+axNmse = gca;
+set(axNmse, 'XTickLabel', {'Exact DPS', 'Approx 4D', 'Hybrid'});
+set(axNmse, 'YScale', 'log');
+grid on;
+title('NMSE Comparison');
+xlabel('Method');
+ylabel('NMSE relative to SoCE');
+legend('NMSE', 'Location', 'best');
+disable_axes_toolbar(axNmse);
+drawnow;
+saveas(figNmse, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_approx_nmse_bar.png'));
+savefig(figNmse, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_approx_nmse_bar.fig'));
+
+figRuntime = figure;
+runtimeValues = [t_soce, ...
+    t_alpha_exact + t_recon_exact, ...
+    t_alpha_approx_4d + t_recon_approx_4d, ...
+    t_alpha_hybrid + t_recon_hybrid];
+bar(runtimeValues);
+axRuntime = gca;
+set(axRuntime, 'XTickLabel', {'SoCE', 'Exact DPS', 'Approx 4D', 'Hybrid'});
+grid on;
+title('Runtime Comparison');
+xlabel('Method');
+ylabel('Runtime [s]');
+legend('Runtime', 'Location', 'best');
+disable_axes_toolbar(axRuntime);
+drawnow;
+saveas(figRuntime, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_approx_runtime_bar.png'));
+savefig(figRuntime, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_approx_runtime_bar.fig'));
 
 %% Local functions
 function dim = make_dps_dimension(N, W0, Wmax, D, rFactor)

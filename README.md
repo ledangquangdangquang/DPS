@@ -1,4 +1,4 @@
-# Mô phỏng kênh MIMO băng rộng sử dụng biểu diễn DPS
+# Mô phỏng kênh MIMO băng rộng biến thiên theo thời gian dựa trên mô hình hình học với độ phức tạp thấp bằng chuỗi DPS
 
 Repository chứa đồ án tốt nghiệp LaTeX và mã MATLAB nghiên cứu phương pháp mô phỏng kênh MIMO băng rộng dựa trên hình học có độ phức tạp thấp. Nội dung được xây dựng từ bài báo:
 
@@ -78,8 +78,7 @@ DPS/
 │   ├── Chuong1.tex
 │   ├── Chuong2.tex
 │   ├── Chuong3.tex
-│   ├── Chuong4.tex
-│   └── Chuong5.tex
+│   └── Chuong4.tex
 ├── MoDau/
 ├── KetThuc/
 ├── mimo_dps_kaltenberger.m
@@ -106,7 +105,7 @@ Vai trò các chương:
 2. Chương 2 phân tích lợi thế và điều kiện áp dụng DPS so với SoCE.
 3. Chương 3 trình bày mô hình hệ thống và ánh xạ sang MATLAB.
 4. Chương 4 trình bày kết quả mô phỏng và thảo luận.
-5. Chương 5 tổng kết, nêu hạn chế và hướng phát triển.
+5. Phần kết luận tổng kết kết quả, nêu hạn chế và hướng phát triển.
 
 ## Yêu cầu phần mềm
 

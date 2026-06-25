@@ -4,20 +4,26 @@
 \phantomsection\subsection*{Kết luận chung}
 \addcontentsline{toc}{section}{\numberline{}Kết luận chung}
 
-Đồ án đã hoàn thành mục tiêu trình bày và kiểm chứng một hướng mô phỏng kênh MIMO băng rộng dựa trên biểu diễn DPS. Mạch nội dung chính của báo cáo bắt đầu từ nút thắt tính toán của SoCE, sau đó khai thác đặc điểm giới hạn băng của kênh để xây dựng biểu diễn không gian con bằng DPS. Trên cơ sở đó, đồ án đã trình bày mô hình GCM MIMO băng rộng, quá trình rời rạc hóa bốn chiều và các nhánh mô phỏng MATLAB tương ứng.
+Đồ án đã nghiên cứu bài toán biểu diễn và tính toán kênh MIMO băng rộng biến thiên theo thời gian dựa trên mô hình kênh hình học. Trong mô hình này, đáp ứng kênh được biểu diễn bằng tổng các hàm mũ phức tương ứng với các thành phần đa đường. SoCE giữ được ý nghĩa vật lý của Doppler, trễ truyền, góc phát và góc thu, nhưng yêu cầu cộng đóng góp của mọi MPC tại từng điểm trong khối kênh. Khi số mẫu, số anten và số MPC tăng, đây trở thành nút thắt chính về độ phức tạp.
 
-Trong phạm vi kết quả đã kiểm chứng, SoCE được dùng làm kênh tham chiếu; DPS chính xác kiểm tra sai số cắt không gian con; DPS xấp xỉ 4D đánh giá ảnh hưởng của công thức xấp xỉ hệ số; và phương pháp hybrid kết hợp DPS theo thời gian--tần số với hàm mũ không gian trực tiếp. Các nhận xét định lượng trong báo cáo đều dựa trên các hình và bảng kết quả đã trình bày ở Chương 4.
+Cơ sở sử dụng DPS xuất phát từ cấu trúc giới hạn băng của kênh theo bốn chiều Doppler, trễ, AoD và AoA. Trên một khối chỉ số hữu hạn, DPS cho phép biểu diễn kênh trong một không gian con có số chiều nhỏ hơn thay vì tính trực tiếp từng MPC tại mọi điểm mẫu. Cách tiếp cận này phù hợp với định hướng mô hình kênh hình học có độ phức tạp thấp của Kaltenberger và cộng sự \cite{Kaltenberger2007}.
 
-Kết quả hiện tại cho thấy biểu diễn DPS có thể giảm số chiều biểu diễn khối kênh trong cấu hình mô phỏng đang xét, đồng thời phương pháp hybrid đạt sai số nhỏ so với SoCE tham chiếu. Tuy nhiên, kết luận này cần được hiểu trong phạm vi một cấu hình mô phỏng cụ thể, chưa phải là khẳng định tổng quát cho mọi kịch bản MIMO băng rộng.
+Đồ án đã triển khai bốn nhánh mô phỏng trên cùng một hiện thực MPC: SoCE tham chiếu; DPS chính xác dùng phép chiếu lên cơ sở DPS; DPS xấp xỉ 4D dùng công thức xấp xỉ hệ số trên cả bốn chiều; và phương pháp hybrid dùng DPS xấp xỉ cho thời gian--tần số kết hợp với hàm mũ trực tiếp cho hai chiều không gian anten. Cách tổ chức này cho phép tách biệt sai số cắt không gian con với sai số do xấp xỉ hệ số.
+
+Trong cấu hình chính với \(M=256\), \(Q=64\), \(N_{\mathrm{Tx}}=N_{\mathrm{Rx}}=4\), \(P=80\) và \(D_{\mathrm{total}}=864\), DPS chính xác đạt NMSE \(8{,}53\times10^{-9}\), DPS xấp xỉ 4D đạt \(1{,}99\times10^{-4}\), còn phương pháp hybrid đạt \(4{,}29\times10^{-7}\) so với SoCE. Trong phạm vi cấu hình này, kết quả cho thấy cơ sở DPS được chọn có sai số cắt nhỏ; đồng thời phương pháp hybrid tạo được sự cân bằng phù hợp hơn giữa sai số và thời gian quan sát được vì không xấp xỉ hệ số ở hai chiều anten.
+
+Thí nghiệm quét \(P\in\{10,20,40,80,160,320\}\) trên 20 hiện thực kênh cho thấy NMSE điển hình của DPS chính xác và hybrid không tăng có hệ thống theo số MPC khi miền giới hạn băng và số chiều DPS được giữ cố định. Trong khi đó, thời gian tính SoCE tăng rõ theo \(P\), còn lợi thế thời gian của hai nhánh DPS thể hiện rõ hơn tại các giá trị \(P\) lớn. Các kết luận này chỉ áp dụng cho phạm vi tham số và môi trường thực thi đã khảo sát; chúng không khẳng định DPS luôn ưu thế trong mọi cấu hình MIMO băng rộng.
+
+\phantomsection\subsection*{Hạn chế}
+\addcontentsline{toc}{section}{\numberline{}Hạn chế}
+
+Mô phỏng hiện tại chưa tái tạo đầy đủ một hình hoặc bảng cụ thể trong bài báo Kaltenberger với toàn bộ tham số tương ứng. Cấu hình chính và nhánh DPS xấp xỉ 4D vẫn được đánh giá trong phạm vi tham số hẹp, do đó chưa đại diện cho mọi kích thước hệ thống và phân bố kênh. Số chiều DPS cùng các hệ số phân giải hiện được chọn theo quy tắc kinh nghiệm, chưa được tối ưu tự động theo một ngưỡng sai số đặt trước. Ngoài ra, phép đo thời gian còn phụ thuộc vào máy tính, phiên bản MATLAB, cách véc-tơ hóa và cấp phát bộ nhớ; vì vậy, các giá trị thời gian chỉ có ý nghĩa so sánh tương đối trong cùng điều kiện đo.
 
 \phantomsection\subsection*{Hướng phát triển}
 \addcontentsline{toc}{section}{\numberline{}Hướng phát triển}
 
-Các hướng phát triển chính gồm quét tham số số chiều DPS và hệ số phân giải, mở rộng kích thước mô phỏng, khớp lại một hình hoặc bảng cụ thể trong bài báo gốc, và chuẩn hóa mã MATLAB thành các hàm độc lập dễ tái sử dụng. Ngoài ra, có thể khảo sát thêm các phân bố MPC không đều hoặc các kịch bản kênh gần hơn với mô hình chuẩn để đánh giá tính ổn định của phương pháp.
+Hướng phát triển trước hết là quét đồng thời số chiều DPS và hệ số phân giải để xác định quan hệ đánh đổi giữa NMSE, số hệ số cần lưu và thời gian tính toán. Tiếp theo, cần mở rộng số anten, số mẫu tần số và số MPC khi điều kiện bộ nhớ cho phép, đồng thời tái tạo một kết quả định lượng của bài báo gốc với bộ tham số được khớp đầy đủ.
 
-\phantomsection\subsection*{Kiến nghị và đề xuất (nếu có)}
-\addcontentsline{toc}{section}{\numberline{}Kiến nghị và đề xuất (nếu có)}
-
-Trong các nghiên cứu tiếp theo, nên ưu tiên tái tạo một kết quả định lượng của bài báo Kaltenberger với bộ tham số được khớp đầy đủ trước khi mở rộng sang các cấu hình lớn hơn. Bước này giúp làm rõ mức độ tương thích giữa mô phỏng MATLAB của đồ án và kết quả gốc, từ đó tạo cơ sở chắc chắn hơn cho các so sánh về độ phức tạp và sai số.
+Mã MATLAB cũng nên được chuẩn hóa thành các hàm độc lập cho các bước sinh MPC, tính SoCE, tạo cơ sở DPS, tính hệ số và tái tạo kênh. Cuối cùng, việc khảo sát các MPC phân bố theo cụm, phân bố góc không đều và mô hình công suất trễ thực tế hơn sẽ giúp đánh giá độ ổn định của phương pháp trong các kịch bản kênh gần với ứng dụng thực tế.
 
 \cleardoublepage

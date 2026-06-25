@@ -103,4 +103,38 @@ The hybrid result is the most relevant approximation result for the thesis becau
 
 ## Verification status
 
-The approximate script implements a paper-style DPS wave-function coefficient approximation and a hybrid method. It has generated reproducible outputs, but the result is still a reproduction attempt and has not yet been matched against a specific figure or table from the paper.
+The approximate wideband-MIMO script implements a paper-style DPS wave-function coefficient approximation and a hybrid method, but its channel-error results have not yet been matched against a specific wideband-MIMO figure or table from the paper. Separately, an original MATLAB plot of DPS eigenvalue decay has been generated using the parameter set reported for the paper's Figure 4 and the DPS definition in Eq. (6).
+
+## Four-method implementation benchmark
+
+`scripts/mimo_four_method_benchmark.m` compares direct SoCE, recursive SoCE, CE-BEM, and exact 4D DPS on the same reproducible MPC realizations. It sweeps `P = [5, 10, 20, 40, 80, 160, 320]`, evaluates NMSE over 20 seeds, and measures runtime with 10 post-warm-up repetitions. CE-BEM and DPS use the same dimensions `(6,9,4,4)`. Basis setup is measured separately so Chapter 4 can distinguish the MPC break-even from the number of reused channel blocks needed to amortize preprocessing.
+
+This benchmark is an implementation-level comparison under the thesis simulation assumptions; it is not a reproduction of a numerical table in Kaltenberger et al.
+
+## DPS eigenvalue illustration using the paper's example parameters
+
+Paper Figure 4 plots the first ten eigenvalues of the one-dimensional DPS concentration problem for `M0 = 0`, `M = 256`, and `M*nu_Dmax = 2`. The corresponding one-sided normalized half-bandwidth is `nu_Dmax = 2/256 = 0.0078125`, and the paper defines the essential dimension as `D_prime = ceil(2*M*nu_Dmax) + 1 = 5`.
+
+MATLAB source:
+
+- `scripts/reproduce_paper_figure4.m`
+
+Generated outputs:
+
+- `results/figures/paper_figure4_dps_eigenvalues.png`
+- `results/figures/paper_figure4_dps_eigenvalues.fig`
+- `results/tables/paper_figure4_dps_eigenvalues.csv`
+
+Interpretation: `lambda_d` is the fraction of the energy of DPS sequence `d` concentrated in the target index interval. The rapid eigenvalue decay after the transition region shows that a length-256 band-limited sequence has only a small effective number of degrees of freedom for this narrow Doppler band. The plot is generated independently in MATLAB from the stated parameterization; it is not copied from the paper.
+
+## Automatic DPS-dimension selection
+
+Paper Eq. (35) expresses the one-dimensional exact-subspace square bias using the sum of omitted DPS eigenvalues. Paper Eq. (38) selects the smallest dimension whose square bias is below the maximum allowable error.
+
+The script `scripts/mimo_dps_adaptive_dimension.m` applies this criterion independently to the time, frequency, Tx, and Rx dimensions. A total design target is divided equally among the four dimensions as an engineering assumption for the separable 4D implementation. Exact DPS projection is used for verification so that measured error represents subspace truncation rather than approximate wave-function coefficient error.
+
+Verification uses 20 reproducible MPC realizations for total targets `1e-2`, `1e-4`, `1e-6`, and `1e-8`, plus the existing fixed `guard = 4` rule. Outputs are saved as:
+
+- `results/tables/mimo_dps_kaltenberger_adaptive_dimension_metrics.csv`
+- `results/figures/mimo_dps_kaltenberger_adaptive_dimension_nmse.png`
+- `results/figures/mimo_dps_kaltenberger_adaptive_dimension_nmse.fig`

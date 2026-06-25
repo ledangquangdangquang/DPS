@@ -2,16 +2,40 @@
 \setcounter{section}{1}
 \label{chap:problem_dps}
 
-\subsection{Bối cảnh mô phỏng kênh MIMO băng rộng}
+\subsection{Mô hình kênh trong thông tin vô tuyến}
 \label{subsec:ch1_context}
 
-Mô phỏng kênh truyền là một bước quan trọng trong quá trình thiết kế và đánh giá hệ thống thông tin vô tuyến. Kênh truyền mô tả sự biến đổi của tín hiệu từ phía phát đến phía thu; đáp ứng kênh là đại lượng toán học dùng để biểu diễn sự biến đổi đó. Trước khi triển khai thuật toán trên phần cứng hoặc kiểm chứng bằng đo đạc thực tế, mô phỏng cho phép khảo sát ảnh hưởng của hiện tượng đa đường, dịch Doppler, trải trễ và cấu trúc anten đến đáp ứng kênh.
+Mô phỏng kênh truyền là một bước quan trọng trong quá trình thiết kế và đánh giá hệ thống thông tin vô tuyến. Đáp ứng kênh biểu diễn bằng toán học những biến đổi mà tín hiệu chịu từ phía phát đến phía thu. Trước khi triển khai thuật toán trên phần cứng hoặc kiểm chứng bằng đo đạc thực tế, mô phỏng cho phép khảo sát ảnh hưởng của hiện tượng đa đường, dịch Doppler, trải trễ và cấu trúc anten.
+
+Các mô hình kênh có thể được xây dựng ở nhiều mức chi tiết khác nhau. Ở mức thống kê hẹp băng, mô hình Rayleigh thường được dùng khi không có thành phần truyền thẳng hoặc đường truyền trội; khi tồn tại thành phần trội, mô hình Rician mô tả kênh bằng tổng của thành phần xác định và phần tán xạ ngẫu nhiên \cite{Goldsmith2005}. Các mô hình này thuận tiện cho phân tích xác suất và mô phỏng mức hệ thống, nhưng không chỉ rõ từng đường truyền gắn với trễ, Doppler hoặc góc lan truyền cụ thể.
+
+Khi kênh có tính chọn lọc theo tần số, mô hình đường trễ rời rạc (Tapped Delay Line, TDL) biểu diễn đáp ứng xung bằng nhiều tap ứng với các độ trễ khác nhau. Mỗi tap có thể mang hệ số fading riêng, nhờ đó TDL mô tả được trải trễ và sự phụ thuộc theo tần số của kênh. Tuy nhiên, TDL vẫn chủ yếu là mô tả theo miền trễ; nếu cần mô phỏng đồng thời thời gian, tần số và hướng không gian của sóng tới, cần một mô hình giàu thông tin hình học hơn.
+
+Một hướng phù hợp cho mục tiêu này là mô hình kênh dựa trên hình học (Geometry-based Channel Model, GCM). Trong GCM, tín hiệu đến máy thu qua nhiều đường lan truyền do phản xạ, nhiễu xạ hoặc tán xạ. Đóng góp của mỗi đường được mô tả bằng một thành phần đa đường (Multipath Component, MPC). Mỗi MPC mang các tham số vật lý như trọng số phức, dịch Doppler, trễ truyền, góc khởi hành và góc tới. Khi lấy tổng đóng góp của các MPC, đáp ứng kênh có dạng tổng các hàm mũ phức (Sum of Complex Exponentials, SoCE) như trong bài báo của Kaltenberger và cộng sự \cite{Kaltenberger2007}.
+
+SoCE giữ được mối liên hệ trực tiếp giữa đáp ứng kênh và các đường lan truyền, nhưng có thể đòi hỏi nhiều phép toán. Khi số MPC, số mẫu thời gian, số điểm tần số hoặc số anten tăng, đóng góp của từng MPC phải được tính trên một khối kênh lớn hơn. Vì vậy, đồ án hướng đến một cách biểu diễn có khả năng giảm khối lượng tính toán mà vẫn duy trì sai số xấp xỉ trong phạm vi kiểm soát.
+
+\subsection{Mô hình kênh MIMO trong các hệ thống hiện đại}
+\label{subsec:ch1_modern_mimo_channel_models}
 
 Đồ án xét hệ thống nhiều anten phát và nhiều anten thu (Multiple-Input Multiple-Output, MIMO) hoạt động trên một dải tần gồm nhiều điểm tần số. Trong hệ thống này, mỗi cặp anten phát--thu có một đáp ứng kênh riêng. Đồng thời, chuyển động của thiết bị làm đáp ứng kênh thay đổi theo thời gian, còn hiện tượng đa đường làm đáp ứng khác nhau giữa các điểm tần số. Vì vậy, một khối kênh MIMO băng rộng phải được mô tả đồng thời theo bốn chiều: thời gian, tần số, anten phát và anten thu.
 
-Một mô hình thường được sử dụng cho bài toán này là mô hình kênh dựa trên hình học (Geometry-based Channel Model, GCM). Trong GCM, tín hiệu đến máy thu qua nhiều đường lan truyền do phản xạ, nhiễu xạ hoặc tán xạ. Đóng góp của mỗi đường được mô tả bằng một thành phần đa đường (Multipath Component, MPC). Mỗi MPC mang các tham số vật lý như trọng số phức, dịch Doppler, trễ truyền, góc khởi hành và góc tới. Khi lấy tổng đóng góp của các MPC, đáp ứng kênh có dạng tổng các hàm mũ phức (Sum of Complex Exponentials, SoCE) như trong bài báo của Kaltenberger và cộng sự \cite{Kaltenberger2007}.
+Các mô hình MIMO băng rộng hiện đại thường kết hợp tham số thống kê với cấu trúc hình học. COST 2100 là một ví dụ về mô hình kênh MIMO ngẫu nhiên dựa trên hình học, có khả năng mô tả đặc tính theo thời gian, tần số và không gian, đồng thời dùng các cụm tán xạ và vùng nhìn thấy để phản ánh sự xuất hiện hoặc biến mất của các thành phần đa đường \cite{Liu2012COST2100}. WINNER II cũng cung cấp các mô hình kênh cho mô phỏng mức liên kết và mức hệ thống, trong đó có các cấu hình nhiều anten, phân cực và nhiều kịch bản truyền sóng \cite{WinnerII2007}. Các mô hình này cho thấy mô phỏng kênh MIMO không chỉ cần hệ số fading tổng quát, mà còn cần mô tả quan hệ giữa trễ, góc, chuyển động và cấu trúc anten.
 
-SoCE giữ được mối liên hệ trực tiếp giữa đáp ứng kênh và các đường lan truyền, nhưng cách tính này có thể đòi hỏi nhiều phép toán. Khi số MPC, số mẫu thời gian, số điểm tần số và số anten tăng, đóng góp của từng MPC phải được tính tại ngày càng nhiều điểm của khối kênh. Vì vậy, vấn đề chính của đồ án là tìm một cách biểu diễn có khả năng giảm khối lượng tính toán, đồng thời duy trì sai số xấp xỉ trong phạm vi kiểm soát.
+Trong các nghiên cứu và đánh giá hệ thống 5G cũng như các hướng mở rộng sau 5G, QuaDRiGa và 3GPP TR 38.901 là hai nguồn mô hình hóa thường được nhắc đến. QuaDRiGa được xây dựng như một bộ sinh đáp ứng xung kênh có xét đến hình học ba chiều và diễn tiến theo thời gian, phục vụ mô phỏng mạng vô tuyến ở mức hệ thống \cite{Jaeckel2014QuaDRiGa}. 3GPP TR 38.901 quy định mô hình kênh cho dải tần từ \(0{,}5\) đến \(100\,\mathrm{GHz}\), bao gồm các kịch bản lớn như đô thị, nông thôn và trong nhà \cite{3GPP38901}. Những mô hình này rộng hơn phạm vi mô phỏng của đồ án, nhưng chúng cho thấy xu hướng chung: kênh MIMO hiện đại cần được mô tả theo nhiều chiều và có cấu trúc vật lý rõ ràng.
+
+Từ góc nhìn của đồ án, các mô hình trên không được triển khai đầy đủ. Vai trò của chúng là đặt bối cảnh: khi mô hình kênh chuyển từ một hệ số fading đơn giản sang một khối MIMO băng rộng biến thiên theo thời gian, chi phí tính toán trở thành một vấn đề thực tế. Vì vậy, việc nghiên cứu một biểu diễn có độ phức tạp thấp cho GCM là một bước hợp lý trước khi mở rộng sang các kịch bản chuẩn hóa lớn hơn.
+
+\subsection{Các phương pháp giảm độ phức tạp}
+\label{subsec:ch1_low_complexity_methods}
+
+Có nhiều cách tiếp cận để giảm chi phí mô phỏng hoặc biểu diễn kênh. Nhóm thứ nhất tối ưu cách tính trực tiếp SoCE. Ví dụ, có thể cập nhật pha đệ quy thay vì gọi hàm mũ tại mọi mẫu. Cách này giữ nguyên mô hình MPC nhưng chủ yếu giảm hằng số thực thi, chưa thay đổi bậc phụ thuộc vào số MPC và tổng số mẫu.
+
+Nhóm thứ hai dùng mô hình khai triển theo cơ sở (Basis Expansion Model, BEM). Với cơ sở hàm mũ phức (Complex-Exponential Basis Expansion Model, CE-BEM), kênh được biểu diễn bằng một tập hàm mũ dùng chung; khi cơ sở trùng với lưới biến đổi Fourier rời rạc (Discrete Fourier Transform, DFT), bước tái tạo có thể tận dụng cấu trúc Fourier \cite{Giannakis1998,Tugnait2006}. Tuy nhiên, nếu tần số thật của MPC không nằm đúng trên lưới, sai số lệch lưới có thể xuất hiện; nếu tăng số điểm lưới để giảm sai số, số hệ số và chi phí cũng tăng.
+
+Một hướng khác là cơ sở Karhunen--Loève (K--L), trong đó các véc-tơ cơ sở được xác định từ trị riêng và véc-tơ riêng của ma trận hiệp phương sai kênh. Về nguyên tắc, cơ sở này có thể đạt biểu diễn gọn nếu thống kê kênh đã biết chính xác. Đổi lại, việc ước lượng hoặc cập nhật hiệp phương sai có thể tốn kém, và cơ sở thu được phụ thuộc vào thống kê của môi trường đang xét. Vì vậy, K--L phù hợp hơn với bài toán đã biết thống kê kênh ổn định, trong khi đồ án này tập trung vào cấu trúc giới hạn băng phát sinh từ miền Doppler, trễ và góc.
+
+DPS nằm giữa hai hướng trên. Giống BEM, DPS biểu diễn kênh bằng một cơ sở hữu hạn. Khác với cơ sở DFT đều, DPS được xây dựng để tập trung năng lượng trong một miền băng liên tục trên một khối chỉ số hữu hạn \cite{Slepian1978}. Đặc điểm này phù hợp với GCM của Kaltenberger và cộng sự, vì các MPC bị giới hạn trong miền Doppler, trễ, góc khởi hành và góc tới \cite{Kaltenberger2007}. Do đó, phần còn lại của đồ án chọn SoCE làm tham chiếu vật lý, sau đó khảo sát DPS như một cách giảm số chiều biểu diễn kênh.
 
 \subsection{SoCE và nút thắt tính toán}
 \label{subsec:ch1_soce_bottleneck}
@@ -22,7 +46,7 @@ h_{\mathbf{m}}
 = \sum_{p=0}^{P-1}\eta_p e^{j2\pi\mathbf{f}_p^T\mathbf{m}}.
 \label{eq:ch1_soc_compact}
 \end{equation}
-Trong đó, \(\mathbf{m}\) là véc-tơ chỉ số xác định một điểm trong khối kênh, gồm chỉ số thời gian, tần số, anten phát và anten thu; \(\mathbf{f}_p\) là véc-tơ chứa các tần số chuẩn hóa tương ứng của MPC thứ \(p\); \(\eta_p\) là trọng số phức biểu diễn biên độ và pha của MPC đó; còn \(P\) là tổng số MPC. Tích vô hướng \(\mathbf{f}_p^T\mathbf{m}\) gộp sự biến thiên theo bốn chiều vào một số hạng pha. Dấu pha và cách chuẩn hóa cụ thể của từng chiều được trình bày tại Chương 3.
+trong đó \(\mathbf{m}\) là véc-tơ chỉ số xác định một điểm trong khối kênh, gồm chỉ số thời gian, tần số, anten phát và anten thu; \(\mathbf{f}_p\) chứa các tần số chuẩn hóa tương ứng của MPC thứ \(p\); \(\eta_p\) là trọng số phức biểu diễn biên độ và pha của MPC đó; còn \(P\) là tổng số MPC. Tích vô hướng \(\mathbf{f}_p^T\mathbf{m}\) gộp sự biến thiên theo bốn chiều vào một số hạng pha. Dấu pha và cách chuẩn hóa cụ thể của từng chiều được trình bày tại Chương 3.
 
 Với cách tính trực tiếp, tại mỗi điểm mẫu \(\mathbf{m}\), biểu thức \eqref{eq:ch1_soc_compact} cần cộng đóng góp của toàn bộ \(P\) MPC. Nếu khối mô phỏng có \(M\) mẫu thời gian, \(Q\) điểm tần số, \(N_{\mathrm{Tx}}\) anten phát và \(N_{\mathrm{Rx}}\) anten thu, bậc độ phức tạp có thể viết:
 \begin{equation}
@@ -63,12 +87,25 @@ Lợi thế của DPS so với SoCE trực tiếp có thể hiểu qua ba điể
 
 Vì vậy, DPS không được lựa chọn tách rời bài toán vật lý. Lựa chọn này xuất phát từ hai nhận xét liên tiếp: cách tính SoCE phải xử lý từng MPC tại từng mẫu, trong khi khối kênh cần mô phỏng lại có cấu trúc giới hạn băng trên miền chỉ số hữu hạn. Chương 2 sẽ làm rõ điều kiện mà biểu diễn DPS có lợi về số chiều và độ phức tạp, đồng thời phân tích sai số phát sinh khi cắt không gian con. Mô hình hệ thống đầy đủ và cách triển khai trong MATLAB được trình bày ở Chương 3.
 
+\subsection{Câu hỏi nghiên cứu và tiêu chí đánh giá}
+\label{subsec:ch1_research_questions}
+
+Từ mối quan hệ giữa mô hình vật lý và bài toán tính toán, đồ án đặt ra ba câu hỏi nghiên cứu. Câu hỏi thứ nhất là liệu không gian con DPS có biểu diễn đủ chính xác khối kênh SoCE trong miền tham số đang xét hay không. Nhánh DPS chính xác được dùng để trả lời câu hỏi này. Do hệ số được tính bằng phép chiếu, sai khác còn lại chủ yếu phản ánh phần năng lượng bị loại khi chỉ giữ một số hữu hạn véc-tơ cơ sở. Nếu sai số của nhánh này lớn, cần tăng số chiều DPS hoặc xem lại miền giới hạn băng trước khi cải thiện công thức xấp xỉ hệ số.
+
+Câu hỏi thứ hai là việc giảm số chiều có chuyển thành lợi ích tính toán quan sát được hay không. Số hệ số nhỏ hơn không tự động đồng nghĩa với thời gian chạy ngắn hơn, bởi phương pháp DPS còn có các bước tạo cơ sở, tính hệ số và tái tạo tensor kênh. Do đó, đồ án không chỉ so sánh kích thước biểu diễn mà còn tách thời gian tiền xử lý khỏi thời gian xử lý mỗi khối. SoCE đệ quy được dùng để kiểm tra ảnh hưởng của cách tạo pha, còn CE-BEM được dùng để so sánh DPS với một cơ sở khai triển khác. Cách tổ chức này giúp nhận diện phần lợi ích đến từ lựa chọn cơ sở và phần lợi ích đến từ cách cài đặt.
+
+Câu hỏi thứ ba là phương pháp nào tạo được cân bằng phù hợp giữa độ chính xác và chi phí trong cấu hình MIMO băng rộng hiện tại. DPS xấp xỉ 4D giảm yêu cầu chiếu chính xác nhưng đưa sai số xấp xỉ vào cả bốn chiều. Phương pháp hybrid chỉ áp dụng DPS xấp xỉ ở thời gian và tần số, đồng thời giữ trực tiếp các hàm mũ không gian. Việc so sánh hai nhánh này cho phép đánh giá liệu giảm thêm số chiều không gian có đáng đổi lấy sai số và chi phí tính hệ số phát sinh hay không.
+
+Các câu hỏi trên được trả lời bằng bốn nhóm tiêu chí. Độ trung thực của kênh được đánh giá bằng MSE, NMSE và sai số tuyệt đối cực đại so với SoCE tham chiếu. Chi phí tính toán gồm thời gian tạo hệ số, thời gian tái tạo và thời gian tiền xử lý cơ sở. Khả năng mở rộng được khảo sát khi số MPC thay đổi, vì phần tính SoCE phụ thuộc trực tiếp vào \(P\). Cuối cùng, khả năng tái sử dụng được đánh giá qua số khối kênh cần thiết để bù chi phí khởi tạo cơ sở. Do đó, phân tích điểm hòa vốn được đặt cùng thời gian xử lý mỗi khối, thay vì chỉ báo một hệ số tăng tốc đơn lẻ.
+
+Phạm vi của đồ án là kiểm chứng bằng mô phỏng số trên cấu hình và các phân bố MPC đã nêu, không nhằm chứng minh một phương pháp ưu thế trong mọi mô hình kênh. Kết quả thời gian phụ thuộc môi trường MATLAB và phần cứng; kết quả sai số phụ thuộc miền băng, số chiều cơ sở và cách sinh MPC. Việc nêu rõ phạm vi này giúp các kết luận ở Chương 4 được hiểu như bằng chứng thực nghiệm có điều kiện, đồng thời chỉ ra những tham số cần khảo sát thêm trước khi chuyển sang một kịch bản chuẩn hóa hoặc triển khai thời gian thực.
+
 \subsection{Định hướng của đồ án}
 \label{subsec:ch1_thesis_direction}
 
 Trên cơ sở vấn đề đã nêu, đồ án tập trung vào bốn nội dung chính. Thứ nhất, đồ án trình bày mô hình SoCE cho kênh MIMO băng rộng dựa trên GCM. Thứ hai, đồ án phân tích cơ sở sử dụng DPS cho tín hiệu giới hạn băng trên khối chỉ số hữu hạn. Thứ ba, đồ án triển khai trong MATLAB bốn nhánh: SoCE làm tham chiếu; DPS chính xác dùng hệ số thu được bằng phép chiếu; DPS xấp xỉ 4D dùng công thức xấp xỉ hệ số trên cả bốn chiều; và phương pháp hybrid chỉ xấp xỉ trên các chiều thời gian, tần số, đồng thời tính trực tiếp phần không gian anten. Thứ tư, đồ án đánh giá sai số và thời gian tính toán của các nhánh dựa trên kết quả mô phỏng.
 
-Trong toàn bộ đồ án, kết quả từ SoCE được xem là giá trị tham chiếu để tính sai số của các biểu diễn DPS. Nhánh DPS chính xác giúp xác định sai số do chỉ giữ một số hữu hạn véc-tơ cơ sở. Hai nhánh xấp xỉ tiếp theo dùng để khảo sát khả năng tính hệ số mà không cần tạo toàn bộ khối SoCE trước bước chiếu. Chương 2 tập trung so sánh cơ chế biểu diễn và số phép tính; Chương 3 mô tả mô hình cùng quy trình triển khai; Chương 4 trình bày sai số và thời gian chạy thu được từ mô phỏng; Chương 5 tổng kết phạm vi kết quả và các hướng phát triển.
+Trong toàn bộ đồ án, kết quả từ SoCE được xem là giá trị tham chiếu để tính sai số của các biểu diễn DPS. Nhánh DPS chính xác giúp xác định sai số do chỉ giữ một số hữu hạn véc-tơ cơ sở. Hai nhánh xấp xỉ tiếp theo dùng để khảo sát khả năng tính hệ số mà không cần tạo toàn bộ khối SoCE trước bước chiếu. Chương 2 tập trung so sánh cơ chế biểu diễn và số phép tính; Chương 3 mô tả mô hình cùng quy trình triển khai; Chương 4 trình bày sai số và thời gian chạy thu được từ mô phỏng. Phần kết luận tổng kết phạm vi kết quả, các hạn chế và hướng phát triển.
 
 \subsection{Kết luận chương}
 \label{subsec:ch1_conclusion}

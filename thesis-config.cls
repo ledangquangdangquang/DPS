@@ -22,7 +22,7 @@
 \RequirePackage{amsmath}                % Gói hỗ trợ xóa dấu ngoặc mặc định của phương trình (gói cho toán học)
 \RequirePackage{amssymb}                % Gói hỗ trợ xóa dấu ngoặc mặc định của phương trình (gói cho toán học)
 \RequirePackage{lipsum}                 % Gói tạo chữ linh tinh
-\RequirePackage[unicode]{hyperref}      % Để bấm mục lục
+\RequirePackage[unicode,hidelinks]{hyperref}      % Link có thể bấm nhưng không hiện màu/khung
 \RequirePackage{enumitem}               % Để customize đề mục tự đếm
 \RequirePackage{datetime}               % Để bóc tách ngày tháng
 \RequirePackage{booktabs}               

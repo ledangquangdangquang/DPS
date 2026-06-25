@@ -188,6 +188,37 @@ drawnow;
 saveas(fig, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_tx1_rx1.png'));
 savefig(fig, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_tx1_rx1.fig'));
 
+%% 11. Bar charts for NMSE and runtime
+figNmse = figure;
+nmseValues = nmse;
+bar(nmseValues);
+axNmse = gca;
+set(axNmse, 'XTickLabel', {'DPS exact'}, 'YScale', 'log');
+grid on;
+title('NMSE of DPS Channel Reconstruction');
+xlabel('Method');
+ylabel('NMSE');
+legend('NMSE', 'Location', 'best');
+disable_axes_toolbar(axNmse);
+drawnow;
+saveas(figNmse, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_nmse_bar.png'));
+savefig(figNmse, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_nmse_bar.fig'));
+
+figRuntime = figure;
+runtimeValues = [t_soce, t_alpha, t_recon, t_alpha + t_recon];
+bar(runtimeValues);
+axRuntime = gca;
+set(axRuntime, 'XTickLabel', {'SoCE', 'DPS alpha', 'DPS recon', 'DPS total'});
+grid on;
+title('Runtime Comparison');
+xlabel('Computation block');
+ylabel('Runtime [s]');
+legend('Runtime', 'Location', 'best');
+disable_axes_toolbar(axRuntime);
+drawnow;
+saveas(figRuntime, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_runtime_bar.png'));
+savefig(figRuntime, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_runtime_bar.fig'));
+
 %% Local functions
 function V = shifted_dpss(N, W0, Wmax, D)
     if Wmax <= 0

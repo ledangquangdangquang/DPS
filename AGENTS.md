@@ -36,10 +36,13 @@ Trước khi chỉnh sửa, đọc các tệp sau khi có liên quan.
 
 ### MATLAB
 
+* `AGENTS_matlab.md`
 * `mimo_dps_kaltenberger.m`
 * `tai lieu/mimo_dps_kaltenberger_approx.m`
 * `results/figures/`
 * `results/tables/`
+
+Khi công việc có liên quan đến đọc, phân tích, viết, sửa, chạy hoặc kiểm tra mã nguồn MATLAB, phải đọc và làm theo hướng dẫn trong `AGENTS_matlab.md` trước khi thực hiện. Nếu có khác biệt giữa hai tệp hướng dẫn, ưu tiên quy tắc cụ thể hơn cho MATLAB trong `AGENTS_matlab.md`, nhưng vẫn phải bảo đảm tính nhất quán giữa mã mô phỏng và nội dung đồ án theo `AGENTS.md` này.
 
 ### LaTeX
 
