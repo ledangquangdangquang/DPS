@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-06-26 replace evaluation forms from supplied PDF
+
+- Read the current progress/TODO records, the existing reviewer-evaluation LaTeX file, `main.tex`, and the supplied two-page PDF containing advisor and reviewer evaluation forms.
+- Replaced `MoDau/PhieuDanhGiaCanBoPhanBien.tex` with editable LaTeX reconstructions of both pages: the advisor evaluation form followed by the reviewer evaluation form.
+- Added `\cleardoublepage` between the two forms and local `\newgeometry`/`\restoregeometry` settings inside the form file so the narrower margins apply only to these front-matter pages.
+- Ran `latexmk -g -pdf -interaction=nonstopmode main.tex` successfully; `main.pdf` was generated with 73 pages.
+- Remaining warnings are small form `multirow` vbox warnings and two pre-existing bibliography underfull-line warnings; both evaluation forms fit on their own pages in the generated PDF.
+
 ## 2026-06-25 add advisor-presentation script
 
 - Read the current progress/TODO records, thesis scenario, abstract, Chapters 1--4, conclusion, appendix overview, and verified result CSV files.
