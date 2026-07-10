@@ -1,4 +1,4 @@
-%% Sweep number of MPCs for SoCE, exact DPS, and hybrid approximate DPS
+%% Sweep number of MPCs for SoCE, exact DPS, approximate 4D DPS, and hybrid DPS
 % Based on Kaltenberger, Zemen, Ueberhuber, "Low-Complexity
 % Geometry-Based MIMO Channel Simulation", EURASIP JASP, 2007.
 %
@@ -73,13 +73,15 @@ D_rx = min(D_rx, N_Rx);
 % Same resolution factors used in the approximate DPS diagnostic script.
 r_t = 2;
 r_f = 512;
+r_tx = 512;
+r_rx = 512;
 
 dim_t  = make_dps_dimension(M, 0, nu_Dmax, D_t, r_t);
 dim_f  = make_dps_dimension(Q, -theta_max/2, theta_max/2, D_f, r_f);
 dim_tx = make_dps_dimension(N_Tx, (zeta_min+zeta_max)/2, ...
-    (zeta_max-zeta_min)/2, D_tx, 1);
+    (zeta_max-zeta_min)/2, D_tx, r_tx);
 dim_rx = make_dps_dimension(N_Rx, -(xi_min+xi_max)/2, ...
-    (xi_max-xi_min)/2, D_rx, 1);
+    (xi_max-xi_min)/2, D_rx, r_rx);
 
 %% 4. NMSE experiment: independent nested MPC pool for each seed
 % Within one seed, the first P physical MPC parameters are reused at each
@@ -93,11 +95,14 @@ rawSeed = repmat(seeds, numP, 1);
 mseExactRaw = zeros(numNmseRows, 1);
 nmseExactRaw = zeros(numNmseRows, 1);
 maxAbsErrExactRaw = zeros(numNmseRows, 1);
+mseApprox4dRaw = zeros(numNmseRows, 1);
+nmseApprox4dRaw = zeros(numNmseRows, 1);
+maxAbsErrApprox4dRaw = zeros(numNmseRows, 1);
 mseHybridRaw = zeros(numNmseRows, 1);
 nmseHybridRaw = zeros(numNmseRows, 1);
 maxAbsErrHybridRaw = zeros(numNmseRows, 1);
 
-fprintf('--- P sweep: SoCE vs exact DPS vs hybrid approximate DPS ---\n');
+fprintf('--- P sweep: SoCE vs exact DPS vs approximate 4D DPS vs hybrid DPS ---\n');
 fprintf('H size: %d x %d x %d x %d\n', M, Q, N_Tx, N_Rx);
 fprintf('DPS dimensions: D_t=%d, D_f=%d, D_tx=%d, D_rx=%d\n', ...
     D_t, D_f, D_tx, D_rx);
@@ -124,6 +129,9 @@ for idxSeed = 1:numSeeds
         mseExactRaw(row) = caseResult.mseExact;
         nmseExactRaw(row) = caseResult.nmseExact;
         maxAbsErrExactRaw(row) = caseResult.maxAbsErrExact;
+        mseApprox4dRaw(row) = caseResult.mseApprox4d;
+        nmseApprox4dRaw(row) = caseResult.nmseApprox4d;
+        maxAbsErrApprox4dRaw(row) = caseResult.maxAbsErrApprox4d;
         mseHybridRaw(row) = caseResult.mseHybrid;
         nmseHybridRaw(row) = caseResult.nmseHybrid;
         maxAbsErrHybridRaw(row) = caseResult.maxAbsErrHybrid;
@@ -142,6 +150,8 @@ timingRepeat = repmat((1:numTimingRepeats).', numP, 1);
 runtimeSoceRaw = zeros(numTimingRows, 1);
 runtimeExactAlphaRaw = zeros(numTimingRows, 1);
 runtimeExactReconRaw = zeros(numTimingRows, 1);
+runtimeApprox4dAlphaRaw = zeros(numTimingRows, 1);
+runtimeApprox4dReconRaw = zeros(numTimingRows, 1);
 runtimeHybridAlphaRaw = zeros(numTimingRows, 1);
 runtimeHybridReconRaw = zeros(numTimingRows, 1);
 
@@ -158,6 +168,9 @@ for idxP = 1:numP
     alphaExact = build_alpha_exact(eta, nu, theta, zeta, xi, ...
         dim_t, dim_f, dim_tx, dim_rx);
     reconstruct_from_alpha(alphaExact, dim_t.V, dim_f.V, dim_tx.V, dim_rx.V);
+    alphaApprox4d = build_alpha_approx_4d(eta, nu, theta, zeta, xi, ...
+        dim_t, dim_f, dim_tx, dim_rx);
+    reconstruct_from_alpha(alphaApprox4d, dim_t.V, dim_f.V, dim_tx.V, dim_rx.V);
     alphaHybrid = build_alpha_approx_hybrid(eta, nu, theta, zeta, xi, ...
         dim_t, dim_f, N_Tx, N_Rx);
     reconstruct_hybrid(alphaHybrid, dim_t.V, dim_f.V);
@@ -177,6 +190,14 @@ for idxP = 1:numP
         runtimeExactReconRaw(row) = toc;
 
         tic;
+        alphaApprox4d = build_alpha_approx_4d(eta, nu, theta, zeta, xi, ...
+            dim_t, dim_f, dim_tx, dim_rx);
+        runtimeApprox4dAlphaRaw(row) = toc;
+        tic;
+        reconstruct_from_alpha(alphaApprox4d, dim_t.V, dim_f.V, dim_tx.V, dim_rx.V);
+        runtimeApprox4dReconRaw(row) = toc;
+
+        tic;
         alphaHybrid = build_alpha_approx_hybrid(eta, nu, theta, zeta, xi, ...
             dim_t, dim_f, N_Tx, N_Rx);
         runtimeHybridAlphaRaw(row) = toc;
@@ -186,12 +207,16 @@ for idxP = 1:numP
     end
 end
 runtimeExactTotalRaw = runtimeExactAlphaRaw + runtimeExactReconRaw;
+runtimeApprox4dTotalRaw = runtimeApprox4dAlphaRaw + runtimeApprox4dReconRaw;
 runtimeHybridTotalRaw = runtimeHybridAlphaRaw + runtimeHybridReconRaw;
 
 %% 6. Summarize and save raw/summary tables
 nmseExactQ1 = zeros(numP, 1);
 nmseExactMedian = zeros(numP, 1);
 nmseExactQ3 = zeros(numP, 1);
+nmseApprox4dQ1 = zeros(numP, 1);
+nmseApprox4dMedian = zeros(numP, 1);
+nmseApprox4dQ3 = zeros(numP, 1);
 nmseHybridQ1 = zeros(numP, 1);
 nmseHybridMedian = zeros(numP, 1);
 nmseHybridQ3 = zeros(numP, 1);
@@ -203,6 +228,11 @@ runtimeExactReconMedian = zeros(numP, 1);
 runtimeExactTotalQ1 = zeros(numP, 1);
 runtimeExactTotalMedian = zeros(numP, 1);
 runtimeExactTotalQ3 = zeros(numP, 1);
+runtimeApprox4dAlphaMedian = zeros(numP, 1);
+runtimeApprox4dReconMedian = zeros(numP, 1);
+runtimeApprox4dTotalQ1 = zeros(numP, 1);
+runtimeApprox4dTotalMedian = zeros(numP, 1);
+runtimeApprox4dTotalQ3 = zeros(numP, 1);
 runtimeHybridAlphaMedian = zeros(numP, 1);
 runtimeHybridReconMedian = zeros(numP, 1);
 runtimeHybridTotalQ1 = zeros(numP, 1);
@@ -212,14 +242,19 @@ for idxP = 1:numP
     idxNmse = rawP == P_list(idxP);
     idxTiming = timingP == P_list(idxP);
     exactNmseQuartiles = quantile(nmseExactRaw(idxNmse), [0.25 0.50 0.75]);
+    approx4dNmseQuartiles = quantile(nmseApprox4dRaw(idxNmse), [0.25 0.50 0.75]);
     hybridNmseQuartiles = quantile(nmseHybridRaw(idxNmse), [0.25 0.50 0.75]);
     soceRuntimeQuartiles = quantile(runtimeSoceRaw(idxTiming), [0.25 0.50 0.75]);
     exactRuntimeQuartiles = quantile(runtimeExactTotalRaw(idxTiming), [0.25 0.50 0.75]);
+    approx4dRuntimeQuartiles = quantile(runtimeApprox4dTotalRaw(idxTiming), [0.25 0.50 0.75]);
     hybridRuntimeQuartiles = quantile(runtimeHybridTotalRaw(idxTiming), [0.25 0.50 0.75]);
 
     nmseExactQ1(idxP) = exactNmseQuartiles(1);
     nmseExactMedian(idxP) = exactNmseQuartiles(2);
     nmseExactQ3(idxP) = exactNmseQuartiles(3);
+    nmseApprox4dQ1(idxP) = approx4dNmseQuartiles(1);
+    nmseApprox4dMedian(idxP) = approx4dNmseQuartiles(2);
+    nmseApprox4dQ3(idxP) = approx4dNmseQuartiles(3);
     nmseHybridQ1(idxP) = hybridNmseQuartiles(1);
     nmseHybridMedian(idxP) = hybridNmseQuartiles(2);
     nmseHybridQ3(idxP) = hybridNmseQuartiles(3);
@@ -231,6 +266,11 @@ for idxP = 1:numP
     runtimeExactTotalQ1(idxP) = exactRuntimeQuartiles(1);
     runtimeExactTotalMedian(idxP) = exactRuntimeQuartiles(2);
     runtimeExactTotalQ3(idxP) = exactRuntimeQuartiles(3);
+    runtimeApprox4dAlphaMedian(idxP) = median(runtimeApprox4dAlphaRaw(idxTiming));
+    runtimeApprox4dReconMedian(idxP) = median(runtimeApprox4dReconRaw(idxTiming));
+    runtimeApprox4dTotalQ1(idxP) = approx4dRuntimeQuartiles(1);
+    runtimeApprox4dTotalMedian(idxP) = approx4dRuntimeQuartiles(2);
+    runtimeApprox4dTotalQ3(idxP) = approx4dRuntimeQuartiles(3);
     runtimeHybridAlphaMedian(idxP) = median(runtimeHybridAlphaRaw(idxTiming));
     runtimeHybridReconMedian(idxP) = median(runtimeHybridReconRaw(idxTiming));
     runtimeHybridTotalQ1(idxP) = hybridRuntimeQuartiles(1);
@@ -240,22 +280,29 @@ end
 
 nmseRaw = table(repmat({'nmse'},numNmseRows,1), rawP, rawSeed, ...
     nan(numNmseRows,1), mseExactRaw, nmseExactRaw, maxAbsErrExactRaw, ...
+    mseApprox4dRaw, nmseApprox4dRaw, maxAbsErrApprox4dRaw, ...
     mseHybridRaw, nmseHybridRaw, maxAbsErrHybridRaw, ...
     nan(numNmseRows,1), nan(numNmseRows,1), nan(numNmseRows,1), ...
     nan(numNmseRows,1), nan(numNmseRows,1), nan(numNmseRows,1), ...
+    nan(numNmseRows,1), nan(numNmseRows,1), nan(numNmseRows,1), ...
     'VariableNames', {'experiment','P','seed','timing_repeat','mse_exact', ...
-    'nmse_exact','max_abs_err_exact','mse_hybrid','nmse_hybrid', ...
+    'nmse_exact','max_abs_err_exact','mse_approx_4d','nmse_approx_4d', ...
+    'max_abs_err_approx_4d','mse_hybrid','nmse_hybrid', ...
     'max_abs_err_hybrid','runtime_soce_s','runtime_exact_alpha_s', ...
     'runtime_exact_recon_s','runtime_exact_total_s', ...
-    'runtime_hybrid_alpha_s','runtime_hybrid_recon_s'});
+    'runtime_approx_4d_alpha_s','runtime_approx_4d_recon_s', ...
+    'runtime_approx_4d_total_s','runtime_hybrid_alpha_s', ...
+    'runtime_hybrid_recon_s'});
 nmseRaw.runtime_hybrid_total_s = nan(numNmseRows,1);
 
 timingRaw = table(repmat({'runtime'},numTimingRows,1), timingP, ...
     timingSeed*ones(numTimingRows,1), timingRepeat, ...
     nan(numTimingRows,1), nan(numTimingRows,1), nan(numTimingRows,1), ...
     nan(numTimingRows,1), nan(numTimingRows,1), nan(numTimingRows,1), ...
+    nan(numTimingRows,1), nan(numTimingRows,1), nan(numTimingRows,1), ...
     runtimeSoceRaw, runtimeExactAlphaRaw, runtimeExactReconRaw, ...
-    runtimeExactTotalRaw, runtimeHybridAlphaRaw, runtimeHybridReconRaw, ...
+    runtimeExactTotalRaw, runtimeApprox4dAlphaRaw, runtimeApprox4dReconRaw, ...
+    runtimeApprox4dTotalRaw, runtimeHybridAlphaRaw, runtimeHybridReconRaw, ...
     'VariableNames', nmseRaw.Properties.VariableNames(1:end-1));
 timingRaw.runtime_hybrid_total_s = runtimeHybridTotalRaw;
 rawTable = [nmseRaw; timingRaw];
@@ -270,22 +317,30 @@ summaryTable = table(P_list, repmat(M,numP,1), repmat(Q,numP,1), ...
     repmat(N_Tx,numP,1), repmat(N_Rx,numP,1), repmat(D_t,numP,1), ...
     repmat(D_f,numP,1), repmat(D_tx,numP,1), repmat(D_rx,numP,1), ...
     repmat(D_t*D_f*D_tx*D_rx,numP,1), repmat(r_t,numP,1), ...
-    repmat(r_f,numP,1), repmat(nu_Dmax,numP,1), ...
+    repmat(r_f,numP,1), repmat(r_tx,numP,1), repmat(r_rx,numP,1), ...
+    repmat(nu_Dmax,numP,1), ...
     repmat(theta_max,numP,1), nmseExactQ1, nmseExactMedian, ...
-    nmseExactQ3, nmseHybridQ1, nmseHybridMedian, nmseHybridQ3, ...
+    nmseExactQ3, nmseApprox4dQ1, nmseApprox4dMedian, nmseApprox4dQ3, ...
+    nmseHybridQ1, nmseHybridMedian, nmseHybridQ3, ...
     runtimeSoceQ1, runtimeSoceMedian, runtimeSoceQ3, ...
     runtimeExactAlphaMedian, runtimeExactReconMedian, ...
     runtimeExactTotalQ1, runtimeExactTotalMedian, runtimeExactTotalQ3, ...
+    runtimeApprox4dAlphaMedian, runtimeApprox4dReconMedian, ...
+    runtimeApprox4dTotalQ1, runtimeApprox4dTotalMedian, runtimeApprox4dTotalQ3, ...
     runtimeHybridAlphaMedian, runtimeHybridReconMedian, ...
     runtimeHybridTotalQ1, runtimeHybridTotalMedian, runtimeHybridTotalQ3, ...
     'VariableNames', {'P','M','Q','N_Tx','N_Rx','D_t','D_f','D_tx', ...
-    'D_rx','D_total','r_t','r_f','nu_Dmax','theta_max', ...
+    'D_rx','D_total','r_t','r_f','r_tx','r_rx','nu_Dmax','theta_max', ...
     'nmse_exact_q1','nmse_exact_median','nmse_exact_q3', ...
+    'nmse_approx_4d_q1','nmse_approx_4d_median','nmse_approx_4d_q3', ...
     'nmse_hybrid_q1','nmse_hybrid_median','nmse_hybrid_q3', ...
     'runtime_soce_q1_s','runtime_soce_median_s','runtime_soce_q3_s', ...
     'runtime_exact_alpha_median_s','runtime_exact_recon_median_s', ...
     'runtime_exact_total_q1_s','runtime_exact_total_median_s', ...
-    'runtime_exact_total_q3_s','runtime_hybrid_alpha_median_s', ...
+    'runtime_exact_total_q3_s','runtime_approx_4d_alpha_median_s', ...
+    'runtime_approx_4d_recon_median_s','runtime_approx_4d_total_q1_s', ...
+    'runtime_approx_4d_total_median_s','runtime_approx_4d_total_q3_s', ...
+    'runtime_hybrid_alpha_median_s', ...
     'runtime_hybrid_recon_median_s','runtime_hybrid_total_q1_s', ...
     'runtime_hybrid_total_median_s','runtime_hybrid_total_q3_s'});
 summaryTable.num_seeds = repmat(numSeeds,numP,1);
@@ -301,12 +356,16 @@ writetable(summaryTable, fullfile(resultsTableDir, ...
 % distribution can be skewed across random channel realizations.
 nmseExactLowerError = nmseExactMedian - nmseExactQ1;
 nmseExactUpperError = nmseExactQ3 - nmseExactMedian;
+nmseApprox4dLowerError = nmseApprox4dMedian - nmseApprox4dQ1;
+nmseApprox4dUpperError = nmseApprox4dQ3 - nmseApprox4dMedian;
 nmseHybridLowerError = nmseHybridMedian - nmseHybridQ1;
 nmseHybridUpperError = nmseHybridQ3 - nmseHybridMedian;
 figNmse = figure;
 errorbar(P_list, nmseExactMedian, nmseExactLowerError, nmseExactUpperError, ...
     '-o', 'LineWidth', 1.5);
 hold on;
+errorbar(P_list, nmseApprox4dMedian, nmseApprox4dLowerError, nmseApprox4dUpperError, ...
+    '-d', 'LineWidth', 1.5);
 errorbar(P_list, nmseHybridMedian, nmseHybridLowerError, nmseHybridUpperError, ...
     '-s', 'LineWidth', 1.5);
 set(gca, 'YScale', 'log');
@@ -314,7 +373,7 @@ grid on;
 title('NMSE versus Number of MPCs');
 xlabel('Number of MPCs P');
 ylabel('NMSE relative to SoCE');
-legend({'Exact DPS', 'Hybrid approximate DPS'}, 'Location', 'best');
+legend({'Exact DPS', 'Approximate 4D DPS', 'Hybrid approximate DPS'}, 'Location', 'best');
 axNmse = gca;
 disable_axes_toolbar(axNmse);
 drawnow;
@@ -325,6 +384,8 @@ runtimeSoceLowerError = runtimeSoceMedian - runtimeSoceQ1;
 runtimeSoceUpperError = runtimeSoceQ3 - runtimeSoceMedian;
 runtimeExactLowerError = runtimeExactTotalMedian - runtimeExactTotalQ1;
 runtimeExactUpperError = runtimeExactTotalQ3 - runtimeExactTotalMedian;
+runtimeApprox4dLowerError = runtimeApprox4dTotalMedian - runtimeApprox4dTotalQ1;
+runtimeApprox4dUpperError = runtimeApprox4dTotalQ3 - runtimeApprox4dTotalMedian;
 runtimeHybridLowerError = runtimeHybridTotalMedian - runtimeHybridTotalQ1;
 runtimeHybridUpperError = runtimeHybridTotalQ3 - runtimeHybridTotalMedian;
 figRuntime = figure;
@@ -333,13 +394,15 @@ errorbar(P_list, runtimeSoceMedian, runtimeSoceLowerError, ...
 hold on;
 errorbar(P_list, runtimeExactTotalMedian, runtimeExactLowerError, ...
     runtimeExactUpperError, '-s', 'LineWidth', 1.5);
+errorbar(P_list, runtimeApprox4dTotalMedian, runtimeApprox4dLowerError, ...
+    runtimeApprox4dUpperError, '-d', 'LineWidth', 1.5);
 errorbar(P_list, runtimeHybridTotalMedian, runtimeHybridLowerError, ...
     runtimeHybridUpperError, '-^', 'LineWidth', 1.5);
 grid on;
 title('Runtime versus Number of MPCs');
 xlabel('Number of MPCs P');
 ylabel('Runtime [s]');
-legend({'SoCE', 'Exact DPS', 'Hybrid approximate DPS'}, 'Location', 'best');
+legend({'SoCE', 'Exact DPS', 'Approximate 4D DPS', 'Hybrid approximate DPS'}, 'Location', 'best');
 axRuntime = gca;
 disable_axes_toolbar(axRuntime);
 drawnow;
@@ -366,16 +429,24 @@ function result = run_mimo_dps_case(eta, nu, theta, zeta, xi, ...
         dim_t, dim_f, dim_tx, dim_rx);
     HExact = reconstruct_from_alpha(alphaExact, dim_t.V, dim_f.V, ...
         dim_tx.V, dim_rx.V);
+    alphaApprox4d = build_alpha_approx_4d(eta, nu, theta, zeta, xi, ...
+        dim_t, dim_f, dim_tx, dim_rx);
+    HApprox4d = reconstruct_from_alpha(alphaApprox4d, dim_t.V, dim_f.V, ...
+        dim_tx.V, dim_rx.V);
     alphaHybrid = build_alpha_approx_hybrid(eta, nu, theta, zeta, xi, ...
         dim_t, dim_f, N_Tx, N_Rx);
     HHybrid = reconstruct_hybrid(alphaHybrid, dim_t.V, dim_f.V);
 
     errorExact = HSoce - HExact;
+    errorApprox4d = HSoce - HApprox4d;
     errorHybrid = HSoce - HHybrid;
     referencePower = mean(abs(HSoce(:)).^2);
     result.mseExact = mean(abs(errorExact(:)).^2);
     result.nmseExact = result.mseExact / referencePower;
     result.maxAbsErrExact = max(abs(errorExact(:)));
+    result.mseApprox4d = mean(abs(errorApprox4d(:)).^2);
+    result.nmseApprox4d = result.mseApprox4d / referencePower;
+    result.maxAbsErrApprox4d = max(abs(errorApprox4d(:)));
     result.mseHybrid = mean(abs(errorHybrid(:)).^2);
     result.nmseHybrid = result.mseHybrid / referencePower;
     result.maxAbsErrHybrid = max(abs(errorHybrid(:)));
@@ -468,6 +539,20 @@ function alpha = build_alpha_exact(eta, nu, theta, zeta, xi, dim_t, dim_f, dim_t
     for p = 1:P
         alpha = alpha + eta(p) .* outer4(Gamma_t(:,p), Gamma_f(:,p), ...
             Gamma_tx(:,p), Gamma_rx(:,p));
+    end
+end
+
+function alpha = build_alpha_approx_4d(eta, nu, theta, zeta, xi, dim_t, dim_f, dim_tx, dim_rx)
+    P = numel(eta);
+    alpha = zeros(dim_t.D, dim_f.D, dim_tx.D, dim_rx.D);
+
+    for p = 1:P
+        gamma_t  = approximate_gamma_1d(nu(p),     dim_t);
+        gamma_f  = approximate_gamma_1d(-theta(p), dim_f);
+        gamma_tx = approximate_gamma_1d(zeta(p),   dim_tx);
+        gamma_rx = approximate_gamma_1d(-xi(p),    dim_rx);
+
+        alpha = alpha + eta(p) .* outer4(gamma_t, gamma_f, gamma_tx, gamma_rx);
     end
 end
 

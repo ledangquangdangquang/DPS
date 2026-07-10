@@ -141,10 +141,10 @@ D_{\mathrm{total}}
 \end{equation}
 So sánh \eqref{eq:ch2_dps_total_dimension_approx} với tổng số mẫu \(\prod_{\ell=1}^{L}N_\ell\) cho thấy lợi thế về số chiều xuất hiện khi các miền băng \(W_\ell\) đủ hẹp để \(D_\ell<N_\ell\), đặc biệt khi điều kiện này đồng thời xảy ra trên nhiều chiều. Mức giảm thực tế còn phụ thuộc vào kích thước khối mẫu và sai số cắt không gian con được chấp nhận.
 
-\subsection{Các phương pháp đối chứng cho biểu diễn DPS}
+\subsection{Đối chứng triển khai cho biểu diễn DPS}
 \label{subsec:ch2_alternative_baselines}
 
-SoCE trực tiếp là tham chiếu tự nhiên vì bám sát các tham số vật lý của từng MPC. Tuy nhiên, nếu chỉ so sánh DPS với một cách cài đặt SoCE chưa tối ưu, phần giảm thời gian quan sát được có thể đến từ cách tính hàm mũ thay vì từ việc giảm số chiều. Vì vậy, hai đối chứng lý thuyết cần được xem xét thêm là SoCE đệ quy và mô hình khai triển theo cơ sở hàm mũ phức (Complex-Exponential Basis Expansion Model, CE-BEM). SoCE đệ quy giữ nguyên tập MPC, còn CE-BEM thay tập tần số liên tục của MPC bằng một cơ sở hàm mũ dùng chung. Hai phương pháp lần lượt giúp tách ảnh hưởng của cách triển khai và ảnh hưởng của việc lựa chọn cơ sở.
+SoCE trực tiếp là tham chiếu tự nhiên vì bám sát các tham số vật lý của từng MPC. Tuy nhiên, nếu chỉ so sánh DPS với một cách cài đặt SoCE chưa tối ưu, phần giảm thời gian quan sát được có thể đến từ cách tính hàm mũ thay vì từ việc giảm số chiều. Vì vậy, SoCE cập nhật pha đệ quy được dùng như một đối chứng triển khai: phương pháp này giữ nguyên tập MPC và mô hình vật lý, nhưng thay cách tạo các thừa số pha. Đối chứng này giúp đánh giá liệu lợi thế của DPS còn được duy trì khi SoCE đã được tối ưu ở mức tạo pha.
 
 \subsubsection{SoCE cập nhật pha đệ quy}
 \label{subsubsec:ch2_recursive_soce}
@@ -162,28 +162,6 @@ h_m=\sum_{p=0}^{P-1}\eta_p z_p[m].
 \label{eq:ch2_recursive_soce}
 \end{equation}
 Trong số học chính xác, \eqref{eq:ch2_recursive_soce} tương đương với SoCE trực tiếp trong \eqref{eq:ch2_1d_soce}; phương pháp không cắt bớt MPC và không lượng tử hóa tần số. Đối với lưới bốn chiều, quan hệ đệ quy có thể được áp dụng riêng cho các thừa số pha theo thời gian, tần số, anten phát và anten thu. Bậc độ phức tạp vẫn là \(\mathcal{O}(PN_{\mathrm{s}})\), nhưng số lần đánh giá hàm mũ được chuyển chủ yếu sang bước khởi tạo. Đổi lại, phép nhân lặp trong số học dấu phẩy động có thể tích lũy sai số biên độ và pha trên khối rất dài. Do đó, đây là đối chứng cần thiết để đánh giá liệu lợi thế của DPS còn được duy trì khi SoCE đã được tối ưu ở mức tạo pha.
-
-\subsubsection{Mô hình CE-BEM}
-\label{subsubsec:ch2_ce_bem}
-
-CE-BEM biểu diễn một khối kênh biến thiên theo thời gian bằng các hàm mũ có tần số cơ sở \(\xi_k\) được chọn trước \cite{Giannakis1998,Tugnait2006}:
-\begin{equation}
-\hat{h}^{K}_{m,\mathrm{CE}}
-=\sum_{k=0}^{K-1}c_k e^{j2\pi\xi_k m},
-\qquad m=0,1,\ldots,N-1,
-\label{eq:ch2_ce_bem}
-\end{equation}
-trong đó \(K\) là số hàm cơ sở và \(c_k\) là hệ số CE-BEM. Khác với SoCE, mỗi tần số \(\nu_p\) gắn với một MPC vật lý và có thể nhận giá trị liên tục trong miền Doppler. Trong CE-BEM, tập \(\{\xi_k\}\) là một lưới dùng chung để biểu diễn đóng góp tổng hợp của nhiều MPC. Khi các tần số cơ sở trùng với các điểm của lưới biến đổi Fourier rời rạc (Discrete Fourier Transform, DFT), ma trận cơ sở trực chuẩn và bước tái tạo có thể khai thác thuật toán FFT.
-
-Nếu \(\mathbf{B}_{\mathrm{CE}}\in\mathbb{C}^{N\times K}\) chứa các hàm cơ sở trong \eqref{eq:ch2_ce_bem}, dạng véc-tơ của CE-BEM là
-\begin{equation}
-\hat{\mathbf{h}}^{K}_{\mathrm{CE}}
-=\mathbf{B}_{\mathrm{CE}}\mathbf{c}.
-\label{eq:ch2_ce_bem_vector}
-\end{equation}
-Với phép nhân ma trận dày, chi phí tái tạo một chiều là \(\mathcal{O}(NK)\). Nếu dùng một lưới DFT đầy đủ và FFT, chi phí có thể giảm còn \(\mathcal{O}(N\log N)\), chưa kể bước xác định \(\mathbf{c}\). Bước này phải được nêu riêng: nếu cần tạo toàn bộ kênh SoCE trước rồi mới chiếu lên cơ sở CE-BEM thì CE-BEM không tạo ra lợi thế cho bài toán mô phỏng; nếu ánh xạ trực tiếp các MPC lên lưới, sai số lệch lưới xuất hiện khi \(\nu_p\notin\{\xi_k\}\). Việc tăng \(K\) hoặc mở rộng lưới có thể giảm sai số biểu diễn nhưng làm tăng số hệ số và chi phí tính toán \cite{Deng2016}.
-
-CE-BEM và DPS đều là mô hình khai triển cơ sở, nhưng tiêu chí xây dựng cơ sở khác nhau. CE-BEM ưu tiên cấu trúc Fourier đều và khả năng dùng FFT; DPS ưu tiên mức tập trung năng lượng trong một miền băng liên tục khi chỉ quan sát trên khối hữu hạn. Vì vậy, CE-BEM là đối chứng phù hợp để kiểm tra liệu lợi ích của DPS đến từ việc dùng một không gian con nói chung hay từ đặc tính tập trung băng của chính cơ sở DPS. Phần này thiết lập cơ sở lý thuyết cho benchmark bốn phương pháp được trình bày tại Chương 4.
 
 \subsection{So sánh độ phức tạp và số phép tính}
 \label{subsec:ch2_operation_count}
@@ -252,12 +230,12 @@ MD_tD_fN_{\mathrm{Tx}}N_{\mathrm{Rx}}
 \label{eq:ch2_hybrid_reconstruction_complexity}
 \end{equation}
 
-Để đặt các biểu thức trên trong cùng một khung so sánh, ký hiệu \(C_{\mathrm{coef,CE}}\) là chi phí xác định hệ số CE-BEM và \(K_{\mathrm{total}}=K_tK_fK_{\mathrm{Tx}}K_{\mathrm{Rx}}\) là số hệ số CE-BEM bốn chiều. Bảng~\ref{tab:ch2_complexity_comparison} tóm tắt bậc độ phức tạp và nguồn sai số của các phương pháp. Các biểu thức FFT chỉ áp dụng khi lưới cơ sở có cấu trúc DFT phù hợp; chúng không được dùng như một bảo đảm cho mọi cách chọn tần số CE-BEM.
+Để đặt các biểu thức trên trong cùng một khung so sánh, Bảng~\ref{tab:ch2_complexity_comparison} tóm tắt bậc độ phức tạp và nguồn sai số của các phương pháp.
 
 \begin{table}[H]
     \centering
     \small
-    \caption{So sánh lý thuyết giữa SoCE, CE-BEM và các nhánh DPS}
+    \caption{So sánh lý thuyết giữa SoCE và các nhánh DPS}
     \label{tab:ch2_complexity_comparison}
     \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.17\textwidth} >{\raggedright\arraybackslash}p{0.25\textwidth} >{\raggedright\arraybackslash}p{0.24\textwidth} >{\raggedright\arraybackslash}X}
         \toprule
@@ -271,10 +249,6 @@ MD_tD_fN_{\mathrm{Tx}}N_{\mathrm{Rx}}
         & Khởi tạo các hệ số quay pha theo từng MPC và từng chiều
         & \(\mathcal{O}(PN_{\mathrm{s}})\)
         & Tương đương SoCE về mặt toán học; giảm số lần gọi hàm mũ nhưng có thể tích lũy sai số làm tròn. \\
-        CE-BEM
-        & \(C_{\mathrm{coef,CE}}\), phụ thuộc phép chiếu hoặc cách ánh xạ MPC lên lưới
-        & \(\mathcal{O}(N_{\mathrm{s}}K_{\mathrm{total}})\) nếu nhân trực tiếp; có thể dùng FFT trên lưới DFT phù hợp
-        & Có sai số cắt cơ sở và lệch lưới; thuận lợi khi cơ sở Fourier đều và hệ số được tạo mà không cần tính trước toàn bộ SoCE. \\
         DPS chính xác 4D
         & \(C_{\gamma,\mathrm{exact}}+\mathcal{O}(PD_{\mathrm{total}})\)
         & \(C_{\mathrm{rec},\mathrm{4D}}\)
@@ -291,7 +265,7 @@ MD_tD_fN_{\mathrm{Tx}}N_{\mathrm{Rx}}
     \end{tabularx}
 \end{table}
 
-Bảng~\ref{tab:ch2_complexity_comparison} cho thấy SoCE đệ quy không thay đổi bậc \(\mathcal{O}(PN_{\mathrm{s}})\); lợi ích của nó nằm ở hằng số thực thi. CE-BEM có thể tận dụng FFT, nhưng tổng chi phí chỉ giảm khi hệ số được xác định hiệu quả và sai số lệch lưới được chấp nhận. DPS không đòi hỏi tần số MPC trùng với một lưới Fourier; lợi thế của nó xuất hiện khi \(D_i\ll N_i\) trên các chiều có miền băng hẹp. Vì vậy, một đánh giá thực nghiệm công bằng phải dùng cùng tập MPC, cùng khối đầu ra và tính cả thời gian tiền xử lý, tạo hệ số lẫn tái tạo.
+Bảng~\ref{tab:ch2_complexity_comparison} cho thấy SoCE đệ quy không thay đổi bậc \(\mathcal{O}(PN_{\mathrm{s}})\); lợi ích của nó nằm ở hằng số thực thi. DPS tổ chức lại phép tính thông qua không gian con, nên lợi thế của nó xuất hiện khi \(D_i\ll N_i\) trên các chiều có miền băng hẹp. Vì vậy, một đánh giá thực nghiệm công bằng phải dùng cùng tập MPC, cùng khối đầu ra và tính cả thời gian tiền xử lý, tạo hệ số lẫn tái tạo.
 
 Bảng~\ref{tab:ch2_operation_estimate} minh họa các đại lượng trên với cấu hình hiện tại: \(M=256\), \(Q=64\), \(N_{\mathrm{Tx}}=N_{\mathrm{Rx}}=4\), \(P=80\), \(D_t=6\), \(D_f=9\) và \(D_{\mathrm{Tx}}=D_{\mathrm{Rx}}=4\). Các giá trị là ước lượng từ kích thước mảng và các biểu thức độ phức tạp, không phải số đếm chính xác mọi phép toán của MATLAB. Các số đo thời gian chạy được trình bày riêng ở Chương 4.
 
@@ -337,11 +311,11 @@ DPS không làm cho mô phỏng kênh luôn đơn giản hơn trong mọi cấu 
 
 Ngược lại, nếu miền giới hạn băng rộng, tích \(2NW\) lớn hoặc số chiều dự phòng cao, \(D\) có thể tiến gần \(N\). Khi đó, lợi thế về số chiều giảm. Ngoài ra, cách tính hệ số xấp xỉ cần cơ sở trên lưới có độ phân giải cao để hạn chế sai số, làm phát sinh chi phí bộ nhớ và tiền xử lý. Vì vậy, việc sử dụng DPS phải được đánh giá đồng thời theo \(N\), \(W\), \(D\), số MPC, độ phân giải xấp xỉ và nhu cầu tái tạo toàn bộ khối kênh.
 
-Trong phạm vi mô phỏng hiện tại, SoCE được dùng làm kênh tham chiếu; DPS chính xác dùng để đánh giá chất lượng không gian con; DPS xấp xỉ 4D và phương pháp hybrid dùng để khảo sát khả năng giảm độ phức tạp khi hệ số không được tính từ toàn bộ khối SoCE. Ngoài nhóm nhánh này, benchmark tại Chương 4 triển khai SoCE đệ quy và CE-BEM trên cùng tập MPC để kiểm tra lợi thế của DPS trước một cách tính SoCE tối ưu hơn và một cơ sở Fourier thay thế.
+Trong phạm vi mô phỏng hiện tại, SoCE được dùng làm kênh tham chiếu; DPS chính xác dùng để đánh giá chất lượng không gian con; DPS xấp xỉ 4D và phương pháp hybrid dùng để khảo sát khả năng giảm độ phức tạp khi hệ số không được tính từ toàn bộ khối SoCE. Ngoài nhóm nhánh DPS này, SoCE đệ quy đóng vai trò đối chứng để kiểm tra ảnh hưởng của cách tạo pha.
 
 \subsection{Kết luận chương}
 \label{subsec:ch2_conclusion}
 
-Chương này đã trả lời hai câu hỏi đặt ra ở đầu chương. DPS giảm số chiều biểu diễn bằng cách dùng các véc-tơ cơ sở có mức tập trung năng lượng cao trong miền băng của kênh; số chiều thiết yếu được liên hệ với tích \(2NW\). So với việc tính từng MPC tại từng mẫu bằng SoCE, DPS tổ chức phép tính thành các bước tạo hệ số và tái tạo từ không gian con. SoCE đệ quy cho thấy việc tối ưu tạo pha có thể giảm hằng số thực thi nhưng không thay đổi bậc phụ thuộc \(PN_{\mathrm{s}}\); CE-BEM cho thấy một cơ sở Fourier cũng có thể giảm số tham số và khai thác FFT, song phải xử lý sai số lệch lưới. Vì vậy, lợi thế của DPS chỉ có khả năng xuất hiện khi số chiều giữ lại đủ nhỏ và chi phí tạo cơ sở, tính hệ số, tái tạo không làm mất phần tiết kiệm. Chương 3 tiếp tục cụ thể hóa các đại lượng này cho mô hình MIMO băng rộng bốn chiều và các nhánh mô phỏng MATLAB hiện có.
+Chương này đã trả lời hai câu hỏi đặt ra ở đầu chương. DPS giảm số chiều biểu diễn bằng cách dùng các véc-tơ cơ sở có mức tập trung năng lượng cao trong miền băng của kênh; số chiều thiết yếu được liên hệ với tích \(2NW\). So với việc tính từng MPC tại từng mẫu bằng SoCE, DPS tổ chức phép tính thành các bước tạo hệ số và tái tạo từ không gian con. SoCE đệ quy cho thấy việc tối ưu tạo pha có thể giảm hằng số thực thi nhưng không thay đổi bậc phụ thuộc \(PN_{\mathrm{s}}\). Vì vậy, lợi thế của DPS chỉ có khả năng xuất hiện khi số chiều giữ lại đủ nhỏ và chi phí tạo cơ sở, tính hệ số, tái tạo không làm mất phần tiết kiệm. Chương 3 tiếp tục cụ thể hóa các đại lượng này cho mô hình MIMO băng rộng bốn chiều và các nhánh mô phỏng MATLAB hiện có.
 
 \cleardoublepage

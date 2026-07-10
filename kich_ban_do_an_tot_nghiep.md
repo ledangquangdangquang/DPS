@@ -78,7 +78,7 @@ Chương 1 đóng vai trò đặt vấn đề, không đi sâu vào toàn bộ m
 1. Tổng quan ngắn về mô hình kênh trong thông tin vô tuyến: Rayleigh, Rician, TDL và GCM.
 2. Đặt GCM trong bối cảnh các mô hình MIMO băng rộng hiện đại như COST 2100, WINNER II, QuaDRiGa và 3GPP TR 38.901, nhưng không đi sâu vào tham số chuẩn hóa của các mô hình này.
 3. Giải thích vì sao đồ án chọn GCM/SoCE làm mô hình tham chiếu có ý nghĩa vật lý.
-4. Nêu các hướng giảm độ phức tạp ở mức định hướng: tối ưu SoCE, CE-BEM/DFT, Karhunen--Loève và DPS.
+4. Nêu các hướng giảm độ phức tạp ở mức định hướng: tối ưu SoCE, Karhunen--Loève và DPS.
 5. SoCE trực tiếp có độ phức tạp lớn vì phải cộng \(P\) MPC tại từng điểm mẫu.
 6. Kênh có cấu trúc giới hạn băng theo Doppler, trễ, AoD và AoA.
 7. DPS phù hợp vì tối ưu cho tín hiệu giới hạn băng trên khối hữu hạn.
@@ -145,12 +145,9 @@ h_m = \sum_{p=0}^{P-1}\eta_p e^{j2\pi\nu_p m}.
    - hệ số trong nhánh hybrid.
 
 9. Nêu trade-off: giảm độ phức tạp nhưng phát sinh sai số cắt không gian con, sai số xấp xỉ hệ số và yêu cầu bộ nhớ cho cơ sở DPS độ phân giải cao.
-10. Bổ sung hai đối chứng lý thuyết:
+10. Bổ sung SoCE đệ quy làm đối chứng triển khai để phân biệt lợi ích do tối ưu tạo pha với lợi ích do giảm số chiều.
 
-   - SoCE đệ quy để phân biệt lợi ích do tối ưu tạo pha với lợi ích do giảm số chiều;
-   - CE-BEM để so sánh cơ sở Fourier đều với cơ sở DPS tập trung băng trên khối hữu hạn.
-
-11. So sánh bậc độ phức tạp, nguồn sai số và điều kiện áp dụng của SoCE trực tiếp, SoCE đệ quy, CE-BEM và các nhánh DPS; không đưa kết quả thời gian hoặc NMSE cho nhánh chưa được triển khai.
+11. So sánh bậc độ phức tạp, nguồn sai số và điều kiện áp dụng của SoCE trực tiếp, SoCE đệ quy và các nhánh DPS; không đưa kết quả thời gian hoặc NMSE cho nhánh chưa được triển khai.
 
 #### Điểm cần nhấn mạnh
 
@@ -367,22 +364,7 @@ Runtime hybrid approx reconstruction = 0.003067 s
 3. Hybrid cho NMSE nhỏ hơn Approx DPS 4D và phù hợp hơn để thảo luận cho MIMO băng rộng.
 4. Thời gian chạy MATLAB chỉ có ý nghĩa tham khảo, vì phụ thuộc máy và cách vector hóa.
 5. Không dùng một cấu hình mô phỏng để kết luận tổng quát rằng phương pháp luôn tối ưu.
-6. Benchmark bổ sung so sánh SoCE trực tiếp, SoCE đệ quy, CE-BEM và DPS chính xác trên cùng tập MPC; báo riêng thời gian tạo cơ sở và thời gian xử lý mỗi khối.
-7. Phân tích điểm hòa vốn theo cả số MPC và số khối cần tái sử dụng cơ sở; xem các ngưỡng thu được là kết quả thực nghiệm phụ thuộc môi trường.
-8. Dùng công thức tổng thời gian tiền xử lý cộng thời gian theo số khối để giải thích điều kiện tồn tại và ý nghĩa của điểm hòa vốn.
-
-#### Benchmark bốn phương pháp
-
-Benchmark dùng `P = [5,10,20,40,80,160,320]`, 20 seed cho NMSE và 10 lần đo thời gian sau khởi động. CE-BEM và DPS dùng cùng số chiều `(6,9,4,4)`. Tại `P = 80`, các giá trị trung vị hiện có là:
-
-```text
-Direct SoCE: runtime = 4.708e-2 s
-Recursive SoCE: runtime = 4.482e-2 s, NMSE = 3.05e-29
-CE-BEM: runtime = 4.454e-3 s, NMSE = 2.96e-8
-Exact DPS: runtime = 5.164e-3 s, NMSE = 3.33e-9
-```
-
-Khi viết kết quả, phải nêu rằng CE-BEM nhanh hơn trong phép đo này nhưng DPS có NMSE thấp hơn với cùng số chiều; không suy rộng thứ tự thời gian sang mọi cách cài đặt. Chi phí tạo cơ sở và giả thiết tái sử dụng cơ sở phải xuất hiện trong phân tích điểm hòa vốn.
+6. Nếu cần nhắc chi phí tiền xử lý, chỉ nêu trong phạm vi cơ sở DPS và khả năng tái sử dụng cơ sở qua nhiều khối kênh.
 
 #### Hình chính nên chèn
 
@@ -453,13 +435,12 @@ Phần này đặt sau Chương 4 và không đánh số chương. Định dạn
 
 ## Cấu trúc phụ lục
 
-Phụ lục được tổ chức thành năm mục:
+Phụ lục được tổ chức thành bốn mục:
 
-1. A1: tham số đầy đủ của cấu hình chính, thí nghiệm quét và benchmark;
+1. A1: tham số đầy đủ của cấu hình chính và thí nghiệm quét;
 2. A2: mã tạo cơ sở DPS, gồm cơ sở dịch băng và phương án trị riêng dự phòng;
 3. A3: mã tính MSE, NMSE và sai số tuyệt đối cực đại;
-4. A4: toàn bộ script benchmark SoCE trực tiếp, SoCE đệ quy, CE-BEM và DPS chính xác;
-5. A5: mô tả các tệp CSV thô và trích các bản ghi tiêu biểu.
+4. A4: mô tả tệp CSV thô của thí nghiệm quét và trích các bản ghi tiêu biểu.
 
 Mã và dữ liệu trong phụ lục phải được nhập trực tiếp từ tệp nguồn hiện hành bằng `\lstinputlisting` để tránh sai khác giữa bản in và chương trình thực thi. Với CSV có hàng trăm bản ghi, chỉ trích phần đầu trong bản in và giữ tệp đầy đủ cùng mã nguồn đồ án.
 

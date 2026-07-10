@@ -12,7 +12,7 @@ Cơ sở sử dụng DPS xuất phát từ cấu trúc giới hạn băng của 
 
 Trong cấu hình chính với \(M=256\), \(Q=64\), \(N_{\mathrm{Tx}}=N_{\mathrm{Rx}}=4\), \(P=80\) và \(D_{\mathrm{total}}=864\), DPS chính xác đạt NMSE \(8{,}53\times10^{-9}\), DPS xấp xỉ 4D đạt \(1{,}99\times10^{-4}\), còn phương pháp hybrid đạt \(4{,}29\times10^{-7}\) so với SoCE. Trong phạm vi cấu hình này, kết quả cho thấy cơ sở DPS được chọn có sai số cắt nhỏ; đồng thời phương pháp hybrid tạo được sự cân bằng phù hợp hơn giữa sai số và thời gian quan sát được vì không xấp xỉ hệ số ở hai chiều anten.
 
-Thí nghiệm quét \(P\in\{10,20,40,80,160,320\}\) trên 20 hiện thực kênh cho thấy NMSE điển hình của DPS chính xác và hybrid không tăng có hệ thống theo số MPC khi miền giới hạn băng và số chiều DPS được giữ cố định. Trong khi đó, thời gian tính SoCE tăng rõ theo \(P\), còn lợi thế thời gian của hai nhánh DPS thể hiện rõ hơn tại các giá trị \(P\) lớn. Các kết luận này chỉ áp dụng cho phạm vi tham số và môi trường thực thi đã khảo sát; chúng không khẳng định DPS luôn ưu thế trong mọi cấu hình MIMO băng rộng.
+Thí nghiệm quét \(P\in\{10,20,40,80,160,320\}\) trên 20 hiện thực kênh cho thấy thứ tự NMSE điển hình giữa DPS chính xác, hybrid và DPS xấp xỉ 4D được duy trì khi miền giới hạn băng và số chiều DPS được giữ cố định. Trong khi đó, thời gian tính SoCE tăng rõ theo \(P\), còn ba nhánh DPS đều có thời gian xử lý thấp hơn SoCE trong dải khảo sát. Các kết luận này chỉ áp dụng cho phạm vi tham số và môi trường thực thi đã khảo sát; chúng không khẳng định DPS luôn ưu thế trong mọi cấu hình MIMO băng rộng.
 
 \phantomsection\subsection*{Hạn chế}
 \addcontentsline{toc}{section}{\numberline{}Hạn chế}

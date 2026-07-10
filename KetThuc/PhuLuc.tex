@@ -65,22 +65,20 @@ Bảng~\ref{tab:app_numerical_parameters} liệt kê kích thước tensor kênh
     \end{tabularx}
 \end{table}
 
-Các thí nghiệm quét và benchmark dùng cấu hình không gian--thời gian giống cấu hình chính nhưng thay đổi số MPC. Bảng~\ref{tab:app_experiment_parameters} ghi rõ số hiện thực và cách đo thời gian để phân biệt dữ liệu ngẫu nhiên với phép đo hiệu năng.
+Các thí nghiệm quét dùng cấu hình không gian--thời gian giống cấu hình chính nhưng thay đổi số MPC. Bảng~\ref{tab:app_experiment_parameters} ghi rõ số hiện thực và cách đo thời gian để phân biệt dữ liệu ngẫu nhiên với phép đo hiệu năng.
 
 \begin{table}[H]
     \centering
     \small
-    \caption{Cấu hình các thí nghiệm quét và benchmark}
+    \caption{Cấu hình thí nghiệm quét số MPC}
     \label{tab:app_experiment_parameters}
     \begin{tabularx}{\textwidth}{l X}
         \toprule
         Thành phần & Cấu hình \\
         \midrule
-        Sweep DPS--hybrid & \(P\in\{10,20,40,80,160,320\}\) \\
-        Benchmark bốn phương pháp & \(P\in\{5,10,20,40,80,160,320\}\) \\
+        Sweep các nhánh DPS & \(P\in\{10,20,40,80,160,320\}\) \\
         Số hiện thực đánh giá NMSE & 20 seed; các cấu hình \(P\) dùng các tập MPC lồng nhau trong từng seed \\
         Đo thời gian & 10 lần sau bước khởi động, báo trung vị và khoảng tứ phân vị \\
-        Seed đo thời gian benchmark & \texttt{runtimeSeed = 1001} \\
         Chi phí tạo cơ sở & Đo riêng và không gộp vào thời gian xử lý mỗi khối \\
         Phiên bản MATLAB & R2025b, mã phiên bản \texttt{25.2.0.2998904} \\
         \bottomrule
@@ -130,52 +128,18 @@ NMSE được tính trên toàn bộ tensor thời gian--tần số--anten phát
     label={lst:app_nmse}
 ]{tai lieu/mimo_dps_kaltenberger_approx.m}
 
-Trong benchmark nhiều seed, phép tính tương tự được thực hiện riêng cho từng hiện thực kênh. Trung vị và các phân vị 25\%, 75\% chỉ được lấy sau khi toàn bộ giá trị NMSE đơn lẻ đã được lưu.
+Trong thí nghiệm nhiều seed, phép tính tương tự được thực hiện riêng cho từng hiện thực kênh. Trung vị và các phân vị 25\%, 75\% chỉ được lấy sau khi toàn bộ giá trị NMSE đơn lẻ đã được lưu.
 
-\subsection*{A4. Chương trình benchmark bốn phương pháp}
+\subsection*{A4. Kết quả thô}
 \phantomsection
-\addcontentsline{toc}{subsection}{A4. Chương trình benchmark bốn phương pháp}
-\label{app:benchmark_script}
-
-Chương trình dưới đây so sánh SoCE trực tiếp, SoCE đệ quy, CE-BEM và DPS chính xác trên cùng các tập MPC. Phần đầu thiết lập cơ sở và cấu hình; phần tiếp theo đánh giá NMSE trên 20 seed, đo thời gian sau bước khởi động, lưu dữ liệu thô và tạo các hình dùng trong Chương 4.
-
-\lstinputlisting[
-    language=Matlab,
-    caption={Chương trình benchmark SoCE, CE-BEM và DPS},
-    label={lst:app_four_method_benchmark}
-]{scripts/mimo_four_method_benchmark.m}
-
-\subsection*{A5. Kết quả thô}
-\phantomsection
-\addcontentsline{toc}{subsection}{A5. Kết quả thô}
+\addcontentsline{toc}{subsection}{A4. Kết quả thô}
 \label{app:raw_results}
 
-Dữ liệu thô được lưu ở định dạng CSV để có thể kiểm tra độc lập với hình vẽ. Ba tập dữ liệu chính gồm:
+Dữ liệu thô được lưu ở định dạng CSV để có thể kiểm tra độc lập với hình vẽ. Tập dữ liệu quét số MPC có 180 bản ghi của DPS chính xác, DPS xấp xỉ 4D và hybrid, gồm dữ liệu NMSE và dữ liệu thời gian:
 
-\begin{itemize}
-    \item Tệp NMSE benchmark có 560 bản ghi, tương ứng với 7 giá trị \(P\), 4 phương pháp và 20 seed:\\[-0.3ex]
-    {\scriptsize\path{results/tables/mimo_four_method_benchmark_nmse_raw.csv}};
-    \item Tệp thời gian benchmark có 280 bản ghi, tương ứng với 7 giá trị \(P\), 4 phương pháp và 10 lần đo:\\[-0.3ex]
-    {\scriptsize\path{results/tables/mimo_four_method_benchmark_runtime_raw.csv}};
-    \item Tệp sweep có 180 bản ghi của DPS chính xác và hybrid, gồm dữ liệu NMSE và dữ liệu thời gian:\\[-0.3ex]
-    {\scriptsize\path{results/tables/mimo_dps_kaltenberger_p_sweep_raw.csv}}.
-\end{itemize}
+{\scriptsize\path{results/tables/mimo_dps_kaltenberger_p_sweep_raw.csv}}.
 
-Các tệp đầy đủ được lưu cùng mã nguồn đồ án. Các đoạn dưới đây trích phần đầu của từng tệp để thể hiện tên cột, thứ tự bản ghi và độ chính xác số được lưu; mọi bảng tổng hợp trong Chương 4 được tính từ các bản ghi này.
-
-\lstinputlisting[
-    firstline=1,
-    lastline=29,
-    caption={Trích dữ liệu NMSE thô của benchmark},
-    label={lst:app_raw_benchmark_nmse}
-]{results/tables/mimo_four_method_benchmark_nmse_raw.csv}
-
-\lstinputlisting[
-    firstline=1,
-    lastline=29,
-    caption={Trích dữ liệu thời gian thô của benchmark},
-    label={lst:app_raw_benchmark_runtime}
-]{results/tables/mimo_four_method_benchmark_runtime_raw.csv}
+Tệp đầy đủ được lưu cùng mã nguồn đồ án. Đoạn dưới đây trích phần đầu của tệp để thể hiện tên cột, thứ tự bản ghi và độ chính xác số được lưu; các bảng tổng hợp trong Chương 4 được tính từ các bản ghi này.
 
 \lstinputlisting[
     firstline=1,

@@ -1,5 +1,72 @@
 # Progress Log
 
+## 2026-07-10 remove CE-BEM from thesis text
+
+- Read the current progress/TODO files, thesis scenario, Chapter 1, Chapter 2, Chapter 4, appendix, glossary, and equation mapping.
+- Removed the CE-BEM discussion from Chapter 1 and Chapter 2 while keeping the SoCE, recursive-SoCE, DPS, approximate-4D-DPS, and hybrid discussion intact.
+- Removed the commented CE-BEM benchmark block and active CE-BEM conclusions from Chapter 4.
+- Removed the CE-BEM abbreviation and removed the appendix section that listed the four-method benchmark script and raw CE-BEM benchmark CSV excerpts.
+- Updated the thesis scenario and equation mapping so future edits do not reintroduce the CE-BEM section into the thesis narrative.
+- Ran `latexmk -pdf -interaction=nonstopmode main.tex` successfully; `main.pdf` was regenerated with 60 pages. Remaining warnings are pre-existing front-matter overfull vboxes, duplicate page-anchor warnings, and one bibliography underfull line.
+
+## 2026-07-09 add approximate 4D DPS to MPC-count sweep
+
+- Read the current progress/TODO files, MATLAB-specific instructions, Chapter 4, appendix raw-result notes, equation mapping, assumptions, and the existing MPC-count sweep script.
+- Updated `tai lieu/mimo_dps_kaltenberger_p_sweep.m` so the sweep now evaluates exact DPS, approximate 4D DPS, and hybrid DPS on the same nested MPC realizations.
+- Added approximate-4D-DPS NMSE columns, runtime columns, summary quartiles, and plot curves to the sweep raw/summary CSV outputs.
+- Regenerated `results/figures/mimo_dps_kaltenberger_p_sweep_nmse.png`, `results/figures/mimo_dps_kaltenberger_p_sweep_runtime.png`, and the corresponding `.fig`, raw CSV, and summary CSV files.
+- Updated Chapter 4 figure captions and discussion for the MPC-count sweep to include approximate 4D DPS and synchronized the reported median ranges with the regenerated summary CSV.
+- Updated the final conclusion, appendix raw-result description, assumptions, and equation/result mapping to reflect the three-DPS-branch sweep.
+- `checkcode` reported no issue for the updated sweep script. No new physical model assumption was introduced.
+
+## 2026-07-09 replace Chapter 4.6 with P80 runtime/NMSE comparison
+
+- Read the current progress/TODO files, thesis scenario, MATLAB-specific instructions, Chapter 4, the approximate MATLAB script, assumptions, equation mapping, and current result CSV files.
+- Added `scripts/create_p80_runtime_nmse_plot.m`, which reads the saved `P=80` approximate-branch metrics and generates a runtime-versus-NMSE scatter figure without rerunning the random channel simulation.
+- Generated `results/figures/mimo_dps_kaltenberger_p80_runtime_nmse.png`, `results/figures/mimo_dps_kaltenberger_p80_runtime_nmse.fig`, and `results/tables/mimo_dps_kaltenberger_p80_runtime_nmse.csv`.
+- Replaced the previous Chapter 4.6 method-selection discussion with a result-focused runtime-versus-NMSE section comparing SoCE, exact DPS, hybrid, and approximate 4D DPS at `P=80`.
+- Synchronized the Chapter 4 runtime table and runtime discussion with the current `results/tables/mimo_dps_kaltenberger_approx_metrics.csv` values.
+- Updated `docs/equations.md` with the new Chapter 4 result figure and table sources.
+- No MATLAB simulation model, random seed, physical parameter, or mathematical assumption was changed.
+
+## 2026-07-07 add DPS algorithm slide to defense deck
+
+- Added a dedicated DPS-algorithm slide after the MATLAB-branch slide in the defense deck.
+- The new slide summarizes four implementation steps: one-dimensional DPS basis generation, coefficient-tensor construction, tensor-mode reconstruction, and SoCE-based NMSE/runtime comparison.
+- Clarified the difference between exact DPS projection, approximate 4D DPS coefficient evaluation, and the hybrid time/frequency DPS branch.
+- Regenerated `docs/bao_ve_do_an_20_phut.pptx`; verified that the exported PowerPoint contains 18 slides.
+- Synchronized `docs/slide_bao_ve_20_phut.md` and `docs/script_doc_slide_bao_ve_20_phut.md` with the new slide and numbering.
+- No LaTeX thesis content, MATLAB code, simulation parameters, result files, equation mapping, or assumptions were changed.
+
+## 2026-07-07 improve defense PowerPoint layout
+
+- Updated the defense slide deck structure from 16 to 17 slides by adding a dedicated agenda slide after the title slide.
+- Improved `scripts/create_defense_pptx.py` with agenda-card layout blocks and dynamic slide numbering.
+- Regenerated `docs/bao_ve_do_an_20_phut.pptx`; verified that the exported PowerPoint contains 17 slides.
+- Synchronized `docs/slide_bao_ve_20_phut.md` and `docs/script_doc_slide_bao_ve_20_phut.md` with the new agenda slide and slide numbering.
+- No LaTeX thesis content, MATLAB code, simulation parameters, result files, equation mapping, or assumptions were changed.
+
+## 2026-07-06 add defense slide outline and speaking script
+
+- Read current progress/TODO records, the thesis scenario, existing defense-question notes, advisor-presentation script, and verified result file lists.
+- Created `docs/slide_bao_ve_20_phut.md` with a 16-slide defense outline for an approximately 20-minute graduation-thesis presentation.
+- Created `docs/script_doc_slide_bao_ve_20_phut.md` with slide-by-slide Vietnamese speaking text, key numerical results, cautions, limitations, and defense reminders.
+- No LaTeX thesis content, MATLAB code, simulation parameters, result files, equation mapping, or assumptions were changed.
+
+## 2026-07-06 export defense PowerPoint
+
+- Added `scripts/create_defense_pptx.py` to generate a 16-slide PowerPoint deck from the prepared defense outline.
+- Created a local virtual environment only for `python-pptx`, because the system Python is externally managed.
+- Exported `docs/bao_ve_do_an_20_phut.pptx` with the main thesis defense slides, verified numerical values, and the available result figures.
+- No LaTeX thesis content, MATLAB code, simulation parameters, result files, equation mapping, or assumptions were changed.
+
+## 2026-06-27 add project code graph
+
+- Read current progress/TODO records, MATLAB-specific instructions, the thesis scenario, `main.tex`, equation/assumption notes, LaTeX figure references, MATLAB result-output statements, and current CSV headers.
+- Added `docs/codegraph.md` as a lightweight project graph linking the paper notes, LaTeX chapters, MATLAB scripts, generated figures/tables, equation labels, and high-risk consistency checks.
+- Encoded the main dependencies used by future edits: `main.tex` imports, Chapter 4 figure/table sources, script-to-result mappings, key equation-to-variable mappings, and checklists for LaTeX/MATLAB changes.
+- No thesis prose, MATLAB algorithm, simulation parameters, numerical results, equation mapping, or assumptions were changed.
+
 ## 2026-06-26 replace evaluation forms from supplied PDF
 
 - Read the current progress/TODO records, the existing reviewer-evaluation LaTeX file, `main.tex`, and the supplied two-page PDF containing advisor and reviewer evaluation forms.

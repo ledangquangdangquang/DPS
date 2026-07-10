@@ -18,7 +18,6 @@ Thesis labels:
 - `\ref{eq:ch2_dps_total_dimension}`: total number of multidimensional DPS coefficients.
 - `\ref{eq:ch2_dps_total_dimension_approx}`: approximate multidimensional essential DPS dimension from the product of one-dimensional essential dimensions.
 - `\ref{eq:ch2_recursive_phasor}` and `\ref{eq:ch2_recursive_soce}`: recursive phasor update for a SoCE baseline; mathematically equivalent to direct SoCE while retaining `O(P N_s)` complexity.
-- `\ref{eq:ch2_ce_bem}` and `\ref{eq:ch2_ce_bem_vector}`: one-dimensional complex-exponential BEM and its matrix form, used as a theoretical Fourier-basis comparator for DPS.
 - `\ref{eq:ch2_total_samples}`: total number of MIMO channel samples in one simulation block.
 - `\ref{eq:ch2_soce_operation_count}`: number of MPC-sample terms required by direct SoCE.
 - `\ref{eq:ch2_exact_gamma_complexity}`: exact one-dimensional DPS projection complexity.
@@ -38,7 +37,7 @@ Notes:
 - Chapter 2 intentionally does not report numerical NMSE or runtime values; those belong to Chapter 4 after checking `results/figures/` and `results/tables/`.
 - Chapter 2 distinguishes exact DPS projection, approximate 4D DPS, and hybrid time/frequency DPS with direct spatial exponentials.
 - Chapter 2 includes an operation-count estimate table based on current simulation dimensions. This is a complexity estimate, not a measured runtime result.
-- Recursive SoCE and CE-BEM are theoretical comparators only. They are not yet MATLAB branches and no Chapter 4 numerical result is attributed to them.
+- Recursive SoCE is used as an implementation comparator for direct SoCE.
 
 Paper Figure 4 mapping:
 
@@ -126,33 +125,26 @@ Thesis labels:
 
 - Chapter 4 source statement: the prose now refers to verified tables and figures without listing technical file paths in the thesis body.
 - `\ref{eq:ch4_nmse_definition}`: NMSE definition used to interpret the saved metrics.
-- `\ref{eq:ch4_amortized_runtime}`: total runtime for multiple channel blocks, separating reusable setup from per-block processing.
-- `\ref{eq:ch4_break_even_blocks}`: smallest integer number of reused blocks needed to amortize setup relative to direct SoCE.
+- Chapter 4 Figure `\ref{fig:mimo_dps_kaltenberger_p80_runtime_nmse}`: runtime-versus-NMSE scatter comparison at `P = 80`, generated from the saved approximate-branch metrics.
 
 Result sources:
 
 - `results/tables/mimo_dps_kaltenberger_approx_metrics.csv`
 - `results/figures/mimo_dps_kaltenberger_approx_tx1_rx1.png`
+- `results/tables/mimo_dps_kaltenberger_p80_runtime_nmse.csv`
+- `results/figures/mimo_dps_kaltenberger_p80_runtime_nmse.png`
 - `results/tables/mimo_dps_kaltenberger_p_sweep_metrics.csv`
 - `results/tables/mimo_dps_kaltenberger_p_sweep_raw.csv`
 - `results/tables/mimo_dps_kaltenberger_p_sweep_summary.csv`
 - `results/figures/mimo_dps_kaltenberger_p_sweep_nmse.png`
 - `results/figures/mimo_dps_kaltenberger_p_sweep_runtime.png`
-- `results/tables/mimo_four_method_benchmark_summary.csv`
-- `results/tables/mimo_four_method_benchmark_runtime_raw.csv`
-- `results/tables/mimo_four_method_benchmark_nmse_raw.csv`
-- `results/tables/mimo_four_method_benchmark_break_even.csv`
-- `results/figures/mimo_four_method_benchmark_runtime.png`
-- `results/figures/mimo_four_method_benchmark_nmse.png`
 
 Notes:
 
 - Numerical values in Chapter 4 are rounded from the CSV file.
 - Runtime values are reported as MATLAB run results for the current environment and are not treated as hardware-independent complexity guarantees.
-- The sweep over `P = [10, 20, 40, 80, 160, 320]` keeps the channel and DPS dimensions fixed. NMSE is summarized by the median and interquartile range over 20 seeds. Runtime is summarized by the median and interquartile range over 10 post-warm-up measurements on fixed data; DPS-basis construction is excluded.
+- The sweep over `P = [10, 20, 40, 80, 160, 320]` keeps the channel and DPS dimensions fixed and compares exact DPS, approximate 4D DPS, and hybrid DPS against the SoCE reference. NMSE is summarized by the median and interquartile range over 20 seeds. Runtime is summarized by the median and interquartile range over 10 post-warm-up measurements on fixed data; DPS-basis construction is excluded.
 - The authoritative sweep sources are the raw and summary CSV files. The older `mimo_dps_kaltenberger_p_sweep_metrics.csv` is retained only as a legacy single-run output and is not used for current Chapter 4 values.
-- The four-method benchmark compares direct SoCE, recursive SoCE, CE-BEM, and exact 4D DPS on the same MPC realizations. CE-BEM and DPS use equal dimensions `(6,9,4,4)`. Runtime excludes reusable basis setup from per-block measurements and reports setup separately for the amortized break-even calculation.
-- Chapter 4 labels `\ref{fig:ch4_four_method_runtime}`, `\ref{fig:ch4_four_method_nmse}`, and `\ref{tab:ch4_four_method_p80}` map to this benchmark.
 
 ## Eq. (48): Maximum normalized Doppler shift
 

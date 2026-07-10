@@ -13,6 +13,12 @@
 
 ## Done
 
+- Added DPS xấp xỉ 4D to the MPC-count sweep figures, raw/summary CSV files, Chapter 4 discussion, conclusion, appendix notes, and result mapping.
+
+- Replaced the previous Chapter 4.6 method-selection discussion with a `P=80` runtime-versus-NMSE result comparison for SoCE, exact DPS, hybrid, and approximate 4D DPS.
+
+- Added `docs/codegraph.md` as a lightweight code graph for the LaTeX/MATLAB/result dependencies of the project.
+
 - Added a reviewer evaluation form as a separate front-matter file and inserted it after the graduation-thesis assignment page.
 
 - Added explicit input--output pseudocode for direct SoCE, exact DPS projection, and the hybrid method to Chapter 3.
