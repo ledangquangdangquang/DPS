@@ -100,6 +100,7 @@ Thesis labels:
 - `\ref{eq:ch3_dimension_error_allocation}`: equal allocation of the total design square-bias target across the four separable dimensions; this is a simulation design assumption, not a paper equation.
 - `\ref{eq:ch3_adaptive_dimension_rule}`: smallest retained dimension whose omitted-eigenvalue bias meets its allocated target, following the selection principle in paper Eq. (38).
 - `\ref{eq:ch3_exact_projection_coefficients}` and `\ref{eq:ch3_exact_alpha}`: exact DPS coefficient calculation.
+- `\ref{eq:ch3_approx_gamma_index}` and `\ref{eq:ch3_approx_gamma_coefficient}`: high-resolution-grid index mapping and one-dimensional approximate DPS coefficient used by `approximate_gamma_1d(...)`.
 - `\ref{eq:ch3_hybrid_alpha}`: hybrid coefficient structure with time/frequency DPS and direct spatial exponentials.
 
 MATLAB mapping:

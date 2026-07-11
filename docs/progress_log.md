@@ -1,5 +1,11 @@
 # Progress Log
 
+## 2026-07-11 detail the approximate DPS coefficient algorithm
+
+- Added the explicit high-resolution-grid index mapping and approximate one-dimensional DPS coefficient equation to Chapter 3.
+- Added a dedicated `ApproxGamma` pseudocode algorithm and referenced it from the approximate-4D and hybrid algorithms, avoiding duplicated low-level steps.
+- Synchronized the new equation labels with `docs/equations.md` and verified that the formulas match `approximate_gamma_1d(...)` in the MATLAB implementation.
+
 ## 2026-07-11 enlarge P=80 runtime--NMSE markers
 
 - Increased the scatter-marker area from 95 to 190 in the four-branch runtime--NMSE figure at `P=80`.
