@@ -13,6 +13,10 @@
 
 ## Done
 
+- Doubled the marker size in the `P=80` runtime--NMSE figure and updated the thesis PDF with the regenerated figure.
+
+- Standardized method colors across MATLAB comparison plots: direct SoCE dark gray, exact DPS blue, approximate 4D DPS orange, and hybrid green; documented auxiliary benchmark colors for recursive SoCE and CE-BEM.
+
 - Added DPS xấp xỉ 4D to the MPC-count sweep figures, raw/summary CSV files, Chapter 4 discussion, conclusion, appendix notes, and result mapping.
 
 - Replaced the previous Chapter 4.6 method-selection discussion with a `P=80` runtime-versus-NMSE result comparison for SoCE, exact DPS, hybrid, and approximate 4D DPS.

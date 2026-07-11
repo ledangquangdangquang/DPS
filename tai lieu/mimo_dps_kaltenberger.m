@@ -191,7 +191,7 @@ savefig(fig, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_tx1_rx1.fig'));
 %% 11. Bar charts for NMSE and runtime
 figNmse = figure;
 nmseValues = nmse;
-bar(nmseValues);
+bar(nmseValues, 'FaceColor', [0.00 0.45 0.74]);
 axNmse = gca;
 set(axNmse, 'XTickLabel', {'DPS exact'}, 'YScale', 'log');
 grid on;
@@ -206,7 +206,9 @@ savefig(figNmse, fullfile(resultsFigDir, 'mimo_dps_kaltenberger_nmse_bar.fig'));
 
 figRuntime = figure;
 runtimeValues = [t_soce, t_alpha, t_recon, t_alpha + t_recon];
-bar(runtimeValues);
+runtimeBars = bar(runtimeValues, 'FaceColor', 'flat');
+runtimeBars.CData = [0.25 0.25 0.25; 0.30 0.60 0.85; ...
+    0.15 0.52 0.78; 0.00 0.45 0.74];
 axRuntime = gca;
 set(axRuntime, 'XTickLabel', {'SoCE', 'DPS alpha', 'DPS recon', 'DPS total'});
 grid on;

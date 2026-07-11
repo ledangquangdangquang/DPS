@@ -285,98 +285,130 @@ Trong MATLAB, nhánh này tương ứng với \texttt{build\_alpha\_approx\_hybr
 \subsection{Tóm tắt các thuật toán mô phỏng}
 \label{subsec:ch3_algorithm_summaries}
 
-Các phương trình trên mô tả quan hệ toán học giữa các nhánh. Để làm rõ thứ tự xử lý trong chương trình, ba thuật toán dưới đây trình bày riêng đầu vào, đầu ra và các bước tính chính. Thuật toán SoCE tạo kênh tham chiếu trực tiếp; thuật toán chiếu DPS chính xác kiểm tra sai số cắt không gian con; còn thuật toán hybrid sử dụng hệ số DPS xấp xỉ ở hai chiều thời gian--tần số và giữ trực tiếp hai chiều không gian.
+Các phương trình trên mô tả quan hệ toán học giữa các nhánh. Để làm rõ thứ tự xử lý trong chương trình, năm thuật toán dưới đây trình bày các khối xử lý chính. Thuật toán~\ref{alg:ch3_dps_basis} tạo cơ sở DPS một chiều; Thuật toán~\ref{alg:ch3_soce_direct} tạo kênh tham chiếu SoCE; Thuật toán~\ref{alg:ch3_exact_dps} kiểm tra phép chiếu DPS chính xác; Thuật toán~\ref{alg:ch3_approx_4d} và Thuật toán~\ref{alg:ch3_hybrid} mô tả hai nhánh xấp xỉ dùng trong mô phỏng.
 
-\subsubsection{Thuật toán SoCE trực tiếp}
-\label{subsubsec:ch3_algorithm_soce}
+\begin{algorithm}[H]
+\caption{Sinh cơ sở DPS dịch băng cho một chiều}
+\label{alg:ch3_dps_basis}
+\textbf{Đầu vào:} độ dài \(N\), tâm băng \(W_0\), nửa băng thông chuẩn hóa \(W_{\max}\), số chiều giữ lại \(D\).\\
+\textbf{Đầu ra:} ma trận cơ sở DPS \(\mathbf{V}\in\mathbb{C}^{N\times D}\) và trị riêng \(\boldsymbol{\lambda}\).
+\begin{algorithmic}[1]
+\State Khởi tạo ma trận tập trung băng \(\mathbf{C}\in\mathbb{R}^{N\times N}\).
+\For{\(m=0\) to \(N-1\)}
+    \For{\(n=0\) to \(N-1\)}
+        \If{\(m=n\)}
+            \State \(C_{m,n}\gets2W_{\max}\)
+        \Else
+            \State \(C_{m,n}\gets\dfrac{\sin\!\left(2\pi W_{\max}(m-n)\right)}{\pi(m-n)}\)
+        \EndIf
+    \EndFor
+\EndFor
+\State Giải bài toán trị riêng \(\mathbf{C}\mathbf{v}_i=\lambda_i\mathbf{v}_i\).
+\State Sắp xếp các trị riêng giảm dần và chọn \(D\) véc-tơ riêng đầu tiên.
+\State Chuẩn hóa dấu và biên độ để \(\mathbf{V}_{\mathrm{sym}}^H\mathbf{V}_{\mathrm{sym}}=\mathbf{I}_D\).
+\State Nhân sóng mang dịch băng: \(\mathbf{V}(:,i)\gets\mathbf{V}_{\mathrm{sym}}(:,i)\odot e^{j2\pi W_0 n}\), với \(n=0,\ldots,N-1\).
+\State \Return \(\mathbf{V},\boldsymbol{\lambda}\)
+\end{algorithmic}
+\end{algorithm}
 
-\noindent\textbf{Đầu vào:} các tham số MPC \(\{\eta_p,\nu_p,\theta_p,\zeta_p,\xi_p\}_{p=0}^{P-1}\) và kích thước \(M,Q,N_{\mathrm{Tx}},N_{\mathrm{Rx}}\).
+\begin{algorithm}[H]
+\caption{Tính kênh tham chiếu bằng SoCE trực tiếp}
+\label{alg:ch3_soce_direct}
+\textbf{Đầu vào:} \(\{\eta_p,\nu_p,\theta_p,\zeta_p,\xi_p\}_{p=0}^{P-1}\), \(M,Q,N_{\mathrm{Tx}},N_{\mathrm{Rx}}\).\\
+\textbf{Đầu ra:} \(\mathbf{H}_{\mathrm{SoCE}}\in\mathbb{C}^{M\times Q\times N_{\mathrm{Tx}}\times N_{\mathrm{Rx}}}\).
+\begin{algorithmic}[1]
+\State Khởi tạo \(\mathbf{H}_{\mathrm{SoCE}}\gets\mathbf{0}\).
+\For{\(p=0\) to \(P-1\)}
+    \State Tính \(\mathbf{e}^{(t)}_p(m)=e^{j2\pi\nu_p m}\).
+    \State Tính \(\mathbf{e}^{(f)}_p(q)=e^{-j2\pi\theta_p q}\).
+    \State Tính \(\mathbf{e}^{(\mathrm{Tx})}_p(s)=e^{j2\pi\zeta_p s}\).
+    \State Tính \(\mathbf{e}^{(\mathrm{Rx})}_p(r)=e^{-j2\pi\xi_p r}\).
+    \State \(\mathbf{H}_{\mathrm{SoCE}}\gets\mathbf{H}_{\mathrm{SoCE}}
+    +\eta_p\,\mathbf{e}^{(t)}_p\circ\mathbf{e}^{(f)}_p
+    \circ\mathbf{e}^{(\mathrm{Tx})}_p\circ\mathbf{e}^{(\mathrm{Rx})}_p\).
+\EndFor
+\State \Return \(\mathbf{H}_{\mathrm{SoCE}}\)
+\end{algorithmic}
+\end{algorithm}
 
-\noindent\textbf{Đầu ra:} tensor kênh tham chiếu \(\mathbf{H}_{\mathrm{SoCE}}\in\mathbb{C}^{M\times Q\times N_{\mathrm{Tx}}\times N_{\mathrm{Rx}}}\).
+\begin{algorithm}[H]
+\caption{Chiếu DPS chính xác}
+\label{alg:ch3_exact_dps}
+\textbf{Đầu vào:} \(\{\eta_p,\nu_p,\theta_p,\zeta_p,\xi_p\}_{p=0}^{P-1}\), \(\mathbf{V}_t,\mathbf{V}_f,\mathbf{V}_{\mathrm{Tx}},\mathbf{V}_{\mathrm{Rx}}\).\\
+\textbf{Đầu ra:} \(\boldsymbol{\alpha}_{\mathrm{exact}}\), \(\widehat{\mathbf{H}}_{\mathrm{exact}}\).
+\begin{algorithmic}[1]
+\State Khởi tạo \(\boldsymbol{\alpha}_{\mathrm{exact}}\gets\mathbf{0}\in
+\mathbb{C}^{D_t\times D_f\times D_{\mathrm{Tx}}\times D_{\mathrm{Rx}}}\).
+\For{\(p=0\) to \(P-1\)}
+    \State Tính \(\boldsymbol{\gamma}^{(t)}_p=\mathbf{V}_t^H\mathbf{e}^{(t)}_p\), \(\boldsymbol{\gamma}^{(f)}_p=\mathbf{V}_f^H\mathbf{e}^{(f)}_p\).
+    \State Tính \(\boldsymbol{\gamma}^{(\mathrm{Tx})}_p=\mathbf{V}_{\mathrm{Tx}}^H\mathbf{e}^{(\mathrm{Tx})}_p\), \(\boldsymbol{\gamma}^{(\mathrm{Rx})}_p=\mathbf{V}_{\mathrm{Rx}}^H\mathbf{e}^{(\mathrm{Rx})}_p\).
+    \State \(\boldsymbol{\alpha}_{\mathrm{exact}}\gets\boldsymbol{\alpha}_{\mathrm{exact}}+\eta_p\,
+    \boldsymbol{\gamma}^{(t)}_p\circ\boldsymbol{\gamma}^{(f)}_p
+    \circ\boldsymbol{\gamma}^{(\mathrm{Tx})}_p
+    \circ\boldsymbol{\gamma}^{(\mathrm{Rx})}_p\).
+\EndFor
+\State \(\widehat{\mathbf{H}}_{\mathrm{exact}}\gets
+\boldsymbol{\alpha}_{\mathrm{exact}}
+\times_1\mathbf{V}_t
+\times_2\mathbf{V}_f
+\times_3\mathbf{V}_{\mathrm{Tx}}
+\times_4\mathbf{V}_{\mathrm{Rx}}\).
+\State \Return \(\boldsymbol{\alpha}_{\mathrm{exact}},\widehat{\mathbf{H}}_{\mathrm{exact}}\)
+\end{algorithmic}
+\end{algorithm}
 
-\begin{enumerate}[label=\arabic*., leftmargin=2.5em]
-    \item Khởi tạo \(\mathbf{H}_{\mathrm{SoCE}}=\mathbf{0}\) và các véc-tơ chỉ số \(m=0,\ldots,M-1\), \(q=0,\ldots,Q-1\), \(s=0,\ldots,N_{\mathrm{Tx}}-1\), \(r=0,\ldots,N_{\mathrm{Rx}}-1\).
-    \item Với mỗi MPC \(p\), tính bốn véc-tơ pha
-    \[
-    \mathbf{e}^{(t)}_p=e^{j2\pi\nu_p m},\quad
-    \mathbf{e}^{(f)}_p=e^{-j2\pi\theta_p q},\quad
-    \mathbf{e}^{(\mathrm{Tx})}_p=e^{j2\pi\zeta_p s},\quad
-    \mathbf{e}^{(\mathrm{Rx})}_p=e^{-j2\pi\xi_p r}.
-    \]
-    \item Tạo đóng góp bốn chiều của MPC bằng tích ngoài của bốn véc-tơ pha, nhân với \(\eta_p\), rồi cộng vào tensor kênh:
-    \[
-    \mathbf{H}_{\mathrm{SoCE}}\leftarrow
-    \mathbf{H}_{\mathrm{SoCE}}+\eta_p\,
-    \mathbf{e}^{(t)}_p\circ\mathbf{e}^{(f)}_p\circ
-    \mathbf{e}^{(\mathrm{Tx})}_p\circ\mathbf{e}^{(\mathrm{Rx})}_p.
-    \]
-    \item Trả về \(\mathbf{H}_{\mathrm{SoCE}}\). Phần tử của tensor kết quả đúng với mô hình trong \eqref{eq:ch3_discrete_soce}.
-\end{enumerate}
+\begin{algorithm}[H]
+\caption{Phương pháp DPS xấp xỉ bốn chiều}
+\label{alg:ch3_approx_4d}
+\textbf{Đầu vào:} \(\{\eta_p,\nu_p,\theta_p,\zeta_p,\xi_p\}_{p=0}^{P-1}\), dữ liệu DPS độ phân giải cao và các cơ sở \(\mathbf{V}_t,\mathbf{V}_f,\mathbf{V}_{\mathrm{Tx}},\mathbf{V}_{\mathrm{Rx}}\).\\
+\textbf{Đầu ra:} \(\boldsymbol{\alpha}_{\mathrm{approx}}\), \(\widehat{\mathbf{H}}_{\mathrm{approx}}\).
+\begin{algorithmic}[1]
+\State Khởi tạo \(\boldsymbol{\alpha}_{\mathrm{approx}}\gets\mathbf{0}\in
+\mathbb{C}^{D_t\times D_f\times D_{\mathrm{Tx}}\times D_{\mathrm{Rx}}}\).
+\For{\(p=0\) to \(P-1\)}
+    \State Ước lượng \(\widetilde{\boldsymbol{\gamma}}^{(t)}_p\) bằng hàm sóng DPS tại \(\nu_p\).
+    \State Ước lượng \(\widetilde{\boldsymbol{\gamma}}^{(f)}_p\) bằng hàm sóng DPS tại \(-\theta_p\).
+    \State Ước lượng \(\widetilde{\boldsymbol{\gamma}}^{(\mathrm{Tx})}_p\) bằng hàm sóng DPS tại \(\zeta_p\).
+    \State Ước lượng \(\widetilde{\boldsymbol{\gamma}}^{(\mathrm{Rx})}_p\) bằng hàm sóng DPS tại \(-\xi_p\).
+    \State \(\boldsymbol{\alpha}_{\mathrm{approx}}\gets\boldsymbol{\alpha}_{\mathrm{approx}}+\eta_p\,
+    \widetilde{\boldsymbol{\gamma}}^{(t)}_p
+    \circ\widetilde{\boldsymbol{\gamma}}^{(f)}_p
+    \circ\widetilde{\boldsymbol{\gamma}}^{(\mathrm{Tx})}_p
+    \circ\widetilde{\boldsymbol{\gamma}}^{(\mathrm{Rx})}_p\).
+\EndFor
+\State \(\widehat{\mathbf{H}}_{\mathrm{approx}}\gets
+\boldsymbol{\alpha}_{\mathrm{approx}}
+\times_1\mathbf{V}_t
+\times_2\mathbf{V}_f
+\times_3\mathbf{V}_{\mathrm{Tx}}
+\times_4\mathbf{V}_{\mathrm{Rx}}\).
+\State \Return \(\boldsymbol{\alpha}_{\mathrm{approx}},\widehat{\mathbf{H}}_{\mathrm{approx}}\)
+\end{algorithmic}
+\end{algorithm}
 
-\subsubsection{Thuật toán chiếu DPS chính xác}
-\label{subsubsec:ch3_algorithm_exact_dps}
-
-\noindent\textbf{Đầu vào:} các tham số MPC và bốn ma trận cơ sở \(\mathbf{V}_t,\mathbf{V}_f,\mathbf{V}_{\mathrm{Tx}},\mathbf{V}_{\mathrm{Rx}}\).
-
-\noindent\textbf{Đầu ra:} tensor hệ số \(\boldsymbol{\alpha}_{\mathrm{exact}}\) và kênh tái tạo \(\mathbf{H}_{\mathrm{exact}}\).
-
-\begin{enumerate}[label=\arabic*., leftmargin=2.5em]
-    \item Tạo các ma trận hàm mũ \(\mathbf{E}_t,\mathbf{E}_f,\mathbf{E}_{\mathrm{Tx}},\mathbf{E}_{\mathrm{Rx}}\), trong đó cột thứ \(p\) chứa véc-tơ pha của MPC thứ \(p\) ở chiều tương ứng.
-    \item Chiếu chính xác từng ma trận hàm mũ lên cơ sở DPS:
-    \[
-    \boldsymbol{\Gamma}_t=\mathbf{V}_t^H\mathbf{E}_t,\quad
-    \boldsymbol{\Gamma}_f=\mathbf{V}_f^H\mathbf{E}_f,\quad
-    \boldsymbol{\Gamma}_{\mathrm{Tx}}=\mathbf{V}_{\mathrm{Tx}}^H\mathbf{E}_{\mathrm{Tx}},\quad
-    \boldsymbol{\Gamma}_{\mathrm{Rx}}=\mathbf{V}_{\mathrm{Rx}}^H\mathbf{E}_{\mathrm{Rx}}.
-    \]
-    Cột thứ \(p\) của mỗi ma trận \(\boldsymbol{\Gamma}\) là véc-tơ hệ số một chiều trong \eqref{eq:ch3_exact_projection_coefficients}.
-    \item Khởi tạo \(\boldsymbol{\alpha}_{\mathrm{exact}}=\mathbf{0}\). Với mỗi MPC, ghép bốn cột hệ số bằng tích ngoài, nhân với \(\eta_p\) và cộng dồn theo \eqref{eq:ch3_exact_alpha}.
-    \item Tái tạo lần lượt theo bốn mode:
-    \[
-    \mathbf{H}_{\mathrm{exact}}
-    =\boldsymbol{\alpha}_{\mathrm{exact}}
-    \times_1\mathbf{V}_t
-    \times_2\mathbf{V}_f
-    \times_3\mathbf{V}_{\mathrm{Tx}}
-    \times_4\mathbf{V}_{\mathrm{Rx}},
-    \]
-    trong đó \(\times_i\) là phép nhân tensor theo mode thứ \(i\).
-    \item Trả về \(\boldsymbol{\alpha}_{\mathrm{exact}}\) và \(\mathbf{H}_{\mathrm{exact}}\). Sai khác so với SoCE ở nhánh này chỉ do cắt số véc-tơ DPS và sai số số học.
-\end{enumerate}
-
-\subsubsection{Thuật toán hybrid}
-\label{subsubsec:ch3_algorithm_hybrid}
-
-\noindent\textbf{Đầu vào:} các tham số MPC; dữ liệu cơ sở độ phân giải cao theo thời gian, tần số; hai cơ sở tái tạo \(\mathbf{V}_t,\mathbf{V}_f\); và \(N_{\mathrm{Tx}},N_{\mathrm{Rx}}\).
-
-\noindent\textbf{Đầu ra:} tensor hệ số \(\boldsymbol{\alpha}_{\mathrm{hybrid}}\) và kênh tái tạo \(\mathbf{H}_{\mathrm{hybrid}}\).
-
-\begin{enumerate}[label=\arabic*., leftmargin=2.5em]
-    \item Khởi tạo \(\boldsymbol{\alpha}_{\mathrm{hybrid}}\in\mathbb{C}^{D_t\times D_f\times N_{\mathrm{Tx}}\times N_{\mathrm{Rx}}}\) bằng không.
-    \item Với mỗi MPC \(p\), dùng công thức hàm sóng DPS để ước lượng \(\widetilde{\boldsymbol{\gamma}}^{(t)}_p\) tại \(\nu_p\) và \(\widetilde{\boldsymbol{\gamma}}^{(f)}_p\) tại \(-\theta_p\).
-    \item Tính trực tiếp hai véc-tơ không gian
-    \[
-    \mathbf{e}^{(\mathrm{Tx})}_p=e^{j2\pi\zeta_p s},\qquad
-    \mathbf{e}^{(\mathrm{Rx})}_p=e^{-j2\pi\xi_p r}.
-    \]
-    \item Tạo và cộng dồn tensor hệ số của MPC theo \eqref{eq:ch3_hybrid_alpha}:
-    \[
-    \boldsymbol{\alpha}_{\mathrm{hybrid}}\leftarrow
-    \boldsymbol{\alpha}_{\mathrm{hybrid}}+\eta_p\,
-    \widetilde{\boldsymbol{\gamma}}^{(t)}_p\circ
-    \widetilde{\boldsymbol{\gamma}}^{(f)}_p\circ
-    \mathbf{e}^{(\mathrm{Tx})}_p\circ
-    \mathbf{e}^{(\mathrm{Rx})}_p.
-    \]
-    \item Chỉ tái tạo theo hai mode DPS:
-    \[
-    \mathbf{H}_{\mathrm{hybrid}}
-    =\boldsymbol{\alpha}_{\mathrm{hybrid}}
-    \times_1\mathbf{V}_t\times_2\mathbf{V}_f.
-    \]
-    Hai mode không gian đã có kích thước đầy đủ nên không cần nhân với cơ sở DPS không gian.
-    \item Trả về \(\boldsymbol{\alpha}_{\mathrm{hybrid}}\) và \(\mathbf{H}_{\mathrm{hybrid}}\).
-\end{enumerate}
+\begin{algorithm}[H]
+\caption{Phương pháp hybrid DPS thời gian--tần số}
+\label{alg:ch3_hybrid}
+\textbf{Đầu vào:} \(\{\eta_p,\nu_p,\theta_p,\zeta_p,\xi_p\}_{p=0}^{P-1}\), dữ liệu DPS độ phân giải cao theo thời gian--tần số, \(\mathbf{V}_t,\mathbf{V}_f,N_{\mathrm{Tx}},N_{\mathrm{Rx}}\).\\
+\textbf{Đầu ra:} \(\boldsymbol{\alpha}_{\mathrm{hybrid}}\), \(\widehat{\mathbf{H}}_{\mathrm{hybrid}}\).
+\begin{algorithmic}[1]
+\State Khởi tạo \(\boldsymbol{\alpha}_{\mathrm{hybrid}}\gets\mathbf{0}\in
+\mathbb{C}^{D_t\times D_f\times N_{\mathrm{Tx}}\times N_{\mathrm{Rx}}}\).
+\For{\(p=0\) to \(P-1\)}
+    \State Ước lượng \(\widetilde{\boldsymbol{\gamma}}^{(t)}_p\) tại \(\nu_p\) và \(\widetilde{\boldsymbol{\gamma}}^{(f)}_p\) tại \(-\theta_p\).
+    \State Tính \(\mathbf{e}^{(\mathrm{Tx})}_p(s)=e^{j2\pi\zeta_p s}\).
+    \State Tính \(\mathbf{e}^{(\mathrm{Rx})}_p(r)=e^{-j2\pi\xi_p r}\).
+    \State \(\boldsymbol{\alpha}_{\mathrm{hybrid}}\gets\boldsymbol{\alpha}_{\mathrm{hybrid}}+\eta_p\,
+    \widetilde{\boldsymbol{\gamma}}^{(t)}_p
+    \circ\widetilde{\boldsymbol{\gamma}}^{(f)}_p
+    \circ\mathbf{e}^{(\mathrm{Tx})}_p
+    \circ\mathbf{e}^{(\mathrm{Rx})}_p\).
+\EndFor
+\State \(\widehat{\mathbf{H}}_{\mathrm{hybrid}}\gets
+\boldsymbol{\alpha}_{\mathrm{hybrid}}\times_1\mathbf{V}_t\times_2\mathbf{V}_f\).
+\State \Return \(\boldsymbol{\alpha}_{\mathrm{hybrid}},\widehat{\mathbf{H}}_{\mathrm{hybrid}}\)
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{Tham số và ánh xạ biến MATLAB}
 \label{subsec:ch3_matlab_mapping}

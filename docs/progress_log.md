@@ -1,5 +1,30 @@
 # Progress Log
 
+## 2026-07-11 enlarge P=80 runtime--NMSE markers
+
+- Increased the scatter-marker area from 95 to 190 in the four-branch runtime--NMSE figure at `P=80`.
+- Regenerated the PNG/FIG outputs from the existing verified metrics; no simulation result or parameter was changed.
+- Recompiled the thesis so Chapter 4 uses the updated figure.
+
+## 2026-07-11 standardize MATLAB method colors
+
+- Read the project/MATLAB instructions, current progress/TODO records, and all MATLAB plotting sections that compare simulation methods.
+- Defined a project-wide palette: direct SoCE dark gray, recursive SoCE purple, CE-BEM dark red, exact DPS blue, approximate 4D DPS orange, and hybrid green.
+- Applied the palette to the P=80 trade-off scatter, MPC-count sweep, four-method benchmark, and single-run NMSE/runtime bar charts.
+- Retained distinct markers in multi-curve plots so curves remain distinguishable in grayscale output.
+- Added `docs/plot_style.md` as the reference for future figures. No simulation model, parameter, metric, or mathematical assumption was changed.
+- Regenerated/recolored the corresponding saved PNG/FIG comparison figures without rerunning or changing the simulation metrics.
+- MATLAB `checkcode` reported no issue in all five modified plotting scripts.
+
+## 2026-07-10 replace Chapter 3 algorithms with corrected algorithm environment
+
+- Read current progress/TODO records, thesis scenario, `algorithm.txt`, MATLAB-specific instructions, Chapter 3, and the main approximate MATLAB script.
+- Checked `algorithm.txt` against `tai lieu/mimo_dps_kaltenberger_approx.m`; corrected the approximate-4D-DPS algorithm so it uses wave-function coefficient estimates at \(\nu_p\), \(-\theta_p\), \(\zeta_p\), and \(-\xi_p\), rather than exact projections \(V^H e_p\).
+- Replaced the old enumerate-based Chapter 3 algorithm summaries with five `algorithm`/`algpseudocode` blocks for shifted DPS basis generation, direct SoCE, exact DPS, approximate 4D DPS, and hybrid DPS.
+- Added the required LaTeX packages and renamed the algorithm float caption to `Thuật toán`.
+- Updated `algorithm.txt` to match the corrected LaTeX inserted into Chapter 3.
+- Ran `latexmk -pdf -interaction=nonstopmode main.tex` successfully; `main.pdf` was regenerated with 61 pages. No undefined references or citations were reported; remaining warnings are pre-existing front-matter overfull vboxes.
+
 ## 2026-07-10 remove CE-BEM from thesis text
 
 - Read the current progress/TODO files, thesis scenario, Chapter 1, Chapter 2, Chapter 4, appendix, glossary, and equation mapping.

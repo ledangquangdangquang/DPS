@@ -35,18 +35,19 @@ writetable(summary, fullfile(resultsTableDir, 'mimo_dps_kaltenberger_p80_runtime
 
 fig = figure('Color', 'w');
 colors = [ ...
-    0.25 0.25 0.25; ...
-    0.20 0.45 0.75; ...
-    0.20 0.65 0.35; ...
-    0.85 0.25 0.15];
+    0.25 0.25 0.25; ... % SoCE: dark gray
+    0.00 0.45 0.74; ... % Exact DPS: blue
+    0.47 0.67 0.19; ... % Hybrid: green
+    0.93 0.69 0.13];    % Approximate 4D DPS: orange
 
 nmsePlotValues = nmseValues;
 nmseFloor = 1e-9;
 nmsePlotValues(1) = nmseFloor; % SoCE is the reference; its actual NMSE is zero.
+markerSize = 190;
 
 hold on;
 for k = 1:numel(methodNames)
-    scatter(runtimeValues(k), nmsePlotValues(k), 95, colors(k, :), 'filled', ...
+    scatter(runtimeValues(k), nmsePlotValues(k), markerSize, colors(k, :), 'filled', ...
         'MarkerEdgeColor', 'k', 'LineWidth', 0.6);
     if k > 1
         text(runtimeValues(k) * 1.04, nmsePlotValues(k), methodNames{k}, ...

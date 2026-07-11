@@ -205,14 +205,19 @@ breakEven = table(methodNames.', setupTimes.', crossOverP.', ...
 writetable(breakEven, fullfile(tableDir, 'mimo_four_method_benchmark_break_even.csv'));
 
 %% Figures
-colors = lines(numMethods);
+% Project-wide method colors: SoCE gray, recursive SoCE purple,
+% CE-BEM red, and exact DPS blue.
+colors = [0.25 0.25 0.25; 0.49 0.18 0.56; ...
+    0.64 0.08 0.18; 0.00 0.45 0.74];
+markers = {'o', 'd', 's', '^'};
 figRuntime = figure;
 hold on;
 for methodIndex = 1:numMethods
     lowerError = runtimeMedian(:,methodIndex) - runtimeQ1(:,methodIndex);
     upperError = runtimeQ3(:,methodIndex) - runtimeMedian(:,methodIndex);
-    errorbar(Pvalues, runtimeMedian(:,methodIndex), lowerError, upperError, '-o', ...
-        'LineWidth', 1.2, 'Color', colors(methodIndex,:));
+    errorbar(Pvalues, runtimeMedian(:,methodIndex), lowerError, upperError, ...
+        ['-' markers{methodIndex}], 'LineWidth', 1.2, ...
+        'Color', colors(methodIndex,:));
 end
 set(gca, 'XScale', 'log', 'YScale', 'log');
 grid on;
@@ -227,7 +232,8 @@ figNmse = figure;
 hold on;
 for methodIndex = 2:numMethods
     safeNmse = max(nmseMedian(:,methodIndex), realmin);
-    plot(Pvalues, safeNmse, '-o', 'LineWidth', 1.2, 'Color', colors(methodIndex,:));
+    plot(Pvalues, safeNmse, ['-' markers{methodIndex}], ...
+        'LineWidth', 1.2, 'Color', colors(methodIndex,:));
 end
 set(gca, 'XScale', 'log', 'YScale', 'log');
 grid on;

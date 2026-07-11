@@ -362,12 +362,12 @@ nmseHybridLowerError = nmseHybridMedian - nmseHybridQ1;
 nmseHybridUpperError = nmseHybridQ3 - nmseHybridMedian;
 figNmse = figure;
 errorbar(P_list, nmseExactMedian, nmseExactLowerError, nmseExactUpperError, ...
-    '-o', 'LineWidth', 1.5);
+    '-o', 'LineWidth', 1.5, 'Color', [0.00 0.45 0.74]);
 hold on;
 errorbar(P_list, nmseApprox4dMedian, nmseApprox4dLowerError, nmseApprox4dUpperError, ...
-    '-d', 'LineWidth', 1.5);
+    '-d', 'LineWidth', 1.5, 'Color', [0.93 0.69 0.13]);
 errorbar(P_list, nmseHybridMedian, nmseHybridLowerError, nmseHybridUpperError, ...
-    '-s', 'LineWidth', 1.5);
+    '-s', 'LineWidth', 1.5, 'Color', [0.47 0.67 0.19]);
 set(gca, 'YScale', 'log');
 grid on;
 title('NMSE versus Number of MPCs');
@@ -390,14 +390,14 @@ runtimeHybridLowerError = runtimeHybridTotalMedian - runtimeHybridTotalQ1;
 runtimeHybridUpperError = runtimeHybridTotalQ3 - runtimeHybridTotalMedian;
 figRuntime = figure;
 errorbar(P_list, runtimeSoceMedian, runtimeSoceLowerError, ...
-    runtimeSoceUpperError, '-o', 'LineWidth', 1.5);
+    runtimeSoceUpperError, '-o', 'LineWidth', 1.5, 'Color', [0.25 0.25 0.25]);
 hold on;
 errorbar(P_list, runtimeExactTotalMedian, runtimeExactLowerError, ...
-    runtimeExactUpperError, '-s', 'LineWidth', 1.5);
+    runtimeExactUpperError, '-s', 'LineWidth', 1.5, 'Color', [0.00 0.45 0.74]);
 errorbar(P_list, runtimeApprox4dTotalMedian, runtimeApprox4dLowerError, ...
-    runtimeApprox4dUpperError, '-d', 'LineWidth', 1.5);
+    runtimeApprox4dUpperError, '-d', 'LineWidth', 1.5, 'Color', [0.93 0.69 0.13]);
 errorbar(P_list, runtimeHybridTotalMedian, runtimeHybridLowerError, ...
-    runtimeHybridUpperError, '-^', 'LineWidth', 1.5);
+    runtimeHybridUpperError, '-^', 'LineWidth', 1.5, 'Color', [0.47 0.67 0.19]);
 grid on;
 title('Runtime versus Number of MPCs');
 xlabel('Number of MPCs P');
