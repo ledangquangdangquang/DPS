@@ -1,5 +1,19 @@
 # Progress Log
 
+## 2026-07-12 derive defense questions from presentation.pdf
+
+- Reviewed the defense deck from a committee perspective and added `docs/cau_hoi_hoi_dong_theo_presentation.md` with 24 likely questions and concise spoken answers.
+- Prioritized questions about low-complexity claims, the three DPS coefficient methods, hybrid selection, NMSE, runtime accounting, reproducibility, limitations, and practical method selection.
+- Highlighted three high-risk claims to avoid: exact DPS requiring a precomputed SoCE tensor, hybrid being universally optimal, and approximate 4D DPS already realizing its theoretical runtime advantage.
+- Cross-checked the answers against current single-run and repeated `P=80` result files; no simulation data, MATLAB code, thesis content, or presentation slide was changed.
+
+## 2026-07-12 add hybrid-method defense questions
+
+- Added two detailed questions to `docs/cau_hoi_bao_ve.md` explaining why the hybrid branch uses approximate DPS in time/frequency but direct spatial exponentials, and whether hybrid can be called optimal.
+- Distinguished the large time/frequency dimensions from the current uncompressed `4 x 4` spatial dimensions and noted that the choice must be revisited for massive-MIMO configurations.
+- Cross-checked the single-run and repeated `P=80` runtime results; the answers avoid claiming that hybrid universally dominates exact DPS.
+- No MATLAB code, simulation result, thesis content, or presentation slide was changed.
+
 ## 2026-07-12 write speaking script for presentation.pdf
 
 - Read and visually reviewed all 26 pages of `presentation.pdf`, including the equations, algorithm slides, simulation pipeline, parameter table, and result plots.

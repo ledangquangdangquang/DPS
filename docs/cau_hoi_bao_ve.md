@@ -145,6 +145,28 @@ Nhánh này giúp đánh giá trực tiếp ảnh hưởng của việc áp dụ
 
 Hai chiều thời gian và tần số có kích thước $$256$$ và $$64$$, nên có khả năng giảm chiều bằng DPS. Hai chiều anten chỉ có $$4\times4$$, và $$D_{\mathrm{Tx}}=D_{\mathrm{Rx}}=4$$, tức là thực tế không có nén số chiều không gian. Giữ hàm mũ không gian trực tiếp giúp tránh sai số xấp xỉ ở hai chiều này.
 
+### 28a. Vì sao hybrid xấp xỉ DPS ở hai chiều thời gian--tần số mà không phải hai chiều anten?
+
+Nói chính xác, hybrid không loại bỏ biểu diễn DPS ở thời gian--tần số mà thay phép chiếu chính xác bằng công thức xấp xỉ hệ số DPS ở hai chiều này. Hai chiều anten không được chiếu lên DPS; chương trình giữ trực tiếp các véc-tơ hàm mũ không gian.
+
+Lý do là kích thước hai chiều thời gian và tần số trong cấu hình hiện tại lần lượt là $$M=256$$ và $$Q=64$$, trong khi số chiều DPS chỉ là $$D_t=6$$ và $$D_f=9$$. Do đó, hai chiều này có tiềm năng giảm chiều rõ rệt. Ngược lại, hai chiều anten chỉ có $$N_{\mathrm{Tx}}=N_{\mathrm{Rx}}=4$$ và số chiều DPS cũng bằng $$D_{\mathrm{Tx}}=D_{\mathrm{Rx}}=4$$. Như vậy, dùng DPS không gian không làm giảm số chiều nhưng vẫn phát sinh chi phí tính hệ số và sai số xấp xỉ. Tính trực tiếp hàm mũ không gian trong trường hợp này vừa đơn giản vừa không tạo thêm sai số xấp xỉ ở phía anten.
+
+Lựa chọn này phụ thuộc cấu hình, không phải quy tắc cố định. Với hệ thống massive MIMO, số anten lớn và miền góc hẹp, số chiều DPS không gian có thể nhỏ hơn đáng kể số anten; khi đó, dùng DPS ở các chiều anten có thể đem lại lợi ích và cần được đánh giá lại.
+
+**Trả lời ngắn khi bảo vệ:** “Em áp dụng DPS xấp xỉ ở thời gian và tần số vì đây là hai chiều lớn, $$256$$ và $$64$$ mẫu, nhưng chỉ cần $$6$$ và $$9$$ véc-tơ DPS. Hai chiều anten chỉ có $$4$$ phần tử và số chiều DPS cũng bằng $$4$$ nên không có lợi ích nén. Giữ hàm mũ không gian trực tiếp giúp tránh thêm sai số xấp xỉ. Nếu số anten tăng lớn thì lựa chọn này cần được xem xét lại.”
+
+### 28b. Vì sao hybrid được xem là tối ưu hơn hai phương pháp DPS còn lại?
+
+Không nên khẳng định hybrid tối ưu hơn cả hai phương pháp trong mọi trường hợp. Hybrid chỉ thể hiện một điểm đánh đổi phù hợp trong cấu hình hiện tại:
+
+- So với DPS xấp xỉ 4D, hybrid không xấp xỉ hai chiều anten. Vì sai số xấp xỉ không gian bị loại bỏ, NMSE giảm từ khoảng $$1{,}99\times10^{-4}$$ xuống $$4{,}29\times10^{-7}$$; đồng thời không phải tính cơ sở và hệ số DPS xấp xỉ cho hai chiều anten.
+- So với DPS chính xác, hybrid thay các phép chiếu chính xác ở thời gian--tần số bằng công thức xấp xỉ và giữ trực tiếp phần anten. Hybrid có thể giảm một phần chi phí tạo hệ số nhưng phải chấp nhận NMSE cao hơn: khoảng $$4{,}29\times10^{-7}$$ so với $$8{,}53\times10^{-9}$$.
+- Trong kết quả tại $$P=80$$, phép đo đơn cho runtime hybrid khoảng $$0{,}018231\,\mathrm{s}$$ và DPS chính xác khoảng $$0{,}034033\,\mathrm{s}$$. Tuy nhiên, trong phép đo lặp của sweep, median runtime của hai nhánh tại $$P=80$$ gần như bằng nhau, lần lượt khoảng $$0{,}010156\,\mathrm{s}$$ và $$0{,}010166\,\mathrm{s}$$. Vì vậy, chưa đủ cơ sở để khẳng định hybrid luôn nhanh hơn DPS chính xác.
+
+Do đó, nếu ưu tiên độ chính xác trong cấu hình đã khảo sát, DPS chính xác là lựa chọn tốt hơn. Nếu chấp nhận NMSE cỡ $$10^{-7}$$ và muốn tránh phép chiếu chính xác ở hai chiều lớn, hybrid là phương án đánh đổi. DPS xấp xỉ 4D hiện chưa được ưu tiên vì vừa có sai số lớn hơn, vừa chưa thể hiện lợi ích runtime tương xứng.
+
+**Trả lời ngắn khi bảo vệ:** “Hybrid không tối ưu tuyệt đối. Nó tốt hơn DPS xấp xỉ 4D trong cấu hình anten nhỏ vì tránh hai nguồn sai số xấp xỉ không gian. So với DPS chính xác, hybrid có thể giảm chi phí tạo hệ số nhưng sai số lớn hơn. Vì vậy, DPS chính xác phù hợp khi ưu tiên độ chính xác; hybrid phù hợp khi chấp nhận sai số khoảng $$10^{-7}$$ để đổi lấy cách triển khai gọn hơn ở hai chiều thời gian--tần số.”
+
 ### 29. rng(1) có tác dụng gì?
 
 rng(1) cố định trạng thái bộ sinh số ngẫu nhiên, giúp tạo lại cùng tập MPC và cùng kết quả. Nó hỗ trợ kiểm chứng và so sánh mã, nhưng một seed duy nhất không đủ để đánh giá phân bố thống kê của sai số.
