@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-07-12 write speaking script for presentation.pdf
+
+- Read and visually reviewed all 26 pages of `presentation.pdf`, including the equations, algorithm slides, simulation pipeline, parameter table, and result plots.
+- Added `docs/script_thuyet_trinh_presentation.md` as an 18--20 minute Vietnamese defense script organized slide by slide.
+- Included transitions, cautious interpretation of verified NMSE/runtime results, distinctions among exact DPS, approximate 4D DPS, and hybrid DPS, and a short-delivery strategy for a 15-minute limit.
+- No thesis LaTeX, MATLAB code, simulation data, presentation slide, equation mapping, or assumption was changed.
+
 ## 2026-07-11 detail the approximate DPS coefficient algorithm
 
 - Added the explicit high-resolution-grid index mapping and approximate one-dimensional DPS coefficient equation to Chapter 3.
